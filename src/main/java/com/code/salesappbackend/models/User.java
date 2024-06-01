@@ -2,11 +2,9 @@ package com.code.salesappbackend.models;
 
 import com.code.salesappbackend.models.enums.Gender;
 import com.code.salesappbackend.models.enums.Role;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDate;
 
@@ -16,6 +14,7 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Entity
 @Table(name = "users")
+@Builder
 public class User extends BaseModel{
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,9 +25,11 @@ public class User extends BaseModel{
     @Column(nullable = false, unique = true)
     private String email;
     @Column(nullable = false)
+    @JsonIgnore
     private String password;
     @Column(nullable = false, name = "phone_number",
             length = 10)
+    @JsonIgnore
     private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private Gender gender;

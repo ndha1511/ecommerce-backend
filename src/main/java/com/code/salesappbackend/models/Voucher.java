@@ -1,12 +1,8 @@
 package com.code.salesappbackend.models;
 
-import com.code.salesappbackend.models.enums.Scope;
 import com.code.salesappbackend.models.enums.VoucherType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -16,6 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "vouchers")
+@Builder
 public class Voucher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,7 +29,5 @@ public class Voucher {
     @Column(name = "expired_date")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime expiredDate;
-    @Enumerated(EnumType.STRING)
-    private Scope scope;
     private Integer quantity;
 }

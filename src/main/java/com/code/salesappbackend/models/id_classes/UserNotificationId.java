@@ -4,10 +4,14 @@ import com.code.salesappbackend.models.Notification;
 import com.code.salesappbackend.models.User;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+
+import java.io.Serializable;
 
 @AllArgsConstructor
 @EqualsAndHashCode
-public class UserNotificationId {
+@NoArgsConstructor
+public class UserNotificationId implements Serializable {
     private User user;
     private Notification notification;
 }
