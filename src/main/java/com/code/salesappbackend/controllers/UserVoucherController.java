@@ -18,7 +18,8 @@ public class UserVoucherController {
     private final UserVoucherMapper userVoucherMapper;
 
     @PostMapping
-    public ResponseSuccess<?> addUserVoucher(@RequestBody UserVoucherDto userVoucherDto) {
+    public ResponseSuccess<?> addUserVoucher(@RequestBody UserVoucherDto userVoucherDto)
+        throws Exception {
         UserVoucher userVoucher = userVoucherMapper.userVoucherDto2UserVoucher(userVoucherDto);
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
@@ -28,7 +29,8 @@ public class UserVoucherController {
     }
 
     @PutMapping
-    public ResponseSuccess<?> updateUserVoucher(@RequestBody UserVoucherDto userVoucherDto) {
+    public ResponseSuccess<?> updateUserVoucher(@RequestBody UserVoucherDto userVoucherDto)
+        throws Exception {
         UserVoucher userVoucher = userVoucherMapper.userVoucherDto2UserVoucher(userVoucherDto);
         UserVoucherId userVoucherId = new UserVoucherId(userVoucher.getUser(), userVoucher.getVoucher());
         return new ResponseSuccess<>(

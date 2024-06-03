@@ -1,11 +1,8 @@
 package com.code.salesappbackend.models;
 
-import com.code.salesappbackend.models.enums.ProductStatus;
+import com.code.salesappbackend.models.enums.Status;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -13,6 +10,7 @@ import lombok.Setter;
 @NoArgsConstructor
 @Entity
 @Table(name = "products")
+@Builder
 public class Product extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -37,7 +35,7 @@ public class Product extends BaseModel {
     private String thumbnail;
     @Enumerated(EnumType.STRING)
     @Column(name = "product_status")
-    private ProductStatus productStatus;
+    private Status productStatus;
     @Column(name = "total_quantity")
     private Integer totalQuantity;
 }

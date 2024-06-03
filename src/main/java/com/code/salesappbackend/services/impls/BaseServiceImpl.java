@@ -1,5 +1,6 @@
 package com.code.salesappbackend.services.impls;
 
+import com.code.salesappbackend.exceptions.DataNotFoundException;
 import com.code.salesappbackend.services.interfaces.BaseService;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -11,7 +12,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-public class BaseServiceImpl<T, ID extends Serializable> implements BaseService<T, ID> {
+public abstract class BaseServiceImpl<T, ID extends Serializable> implements BaseService<T, ID> {
     private final JpaRepository<T, ID> repository;
 
     public BaseServiceImpl(JpaRepository<T, ID> repository) {
@@ -39,22 +40,22 @@ public class BaseServiceImpl<T, ID extends Serializable> implements BaseService<
     }
 
     @Override
-    public T update(ID id, T t) {
+    public T update(ID id, T t) throws DataNotFoundException {
         repository.findById(id)
-                .orElseThrow(() -> new RuntimeException("not found data"));
+                .orElseThrow(() -> new DataNotFoundException("not found data"));
         return repository.save(t);
     }
 
     @Override
-    public T updatePatch(ID id, Map<String, ?> data) {
-        T t = repository.findById(id).orElseThrow();
+    public T updatePatch(ID id, Map<String, ?> data) throws DataNotFoundException {
+        T t = repository.findById(id).orElseThrow(
+                () -> new DataNotFoundException("not found data"));
         Class<?> clazz = t.getClass();
         Set<String> keys = data.keySet();
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
             for(String key : keys) {
-                if(method.getName().equals("set" + toUpperCaseFirstChar(key)) ||
-                        method.getName().equals("is" + toUpperCaseFirstChar(key))) {
+                if(method.getName().equals("set" + toUpperCaseFirstChar(key))) {
                     try {
                         Object value = data.get(key);
                         if (value instanceof String && method.getParameterTypes()[0].isEnum()) {

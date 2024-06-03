@@ -1,5 +1,6 @@
 package com.code.salesappbackend.models;
 
+import com.code.salesappbackend.models.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -26,4 +27,7 @@ public class Provider {
     private String phoneNumber;
     @Column(unique = true)
     private String email;
+    @Enumerated(EnumType.STRING)
+    @Column(name = "provider_status", nullable = false)
+    private Status status;
 }

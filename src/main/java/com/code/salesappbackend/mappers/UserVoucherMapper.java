@@ -1,6 +1,7 @@
 package com.code.salesappbackend.mappers;
 
 import com.code.salesappbackend.dtos.requests.UserVoucherDto;
+import com.code.salesappbackend.exceptions.DataNotFoundException;
 import com.code.salesappbackend.models.User;
 import com.code.salesappbackend.models.UserVoucher;
 import com.code.salesappbackend.models.Voucher;
@@ -15,13 +16,13 @@ public class UserVoucherMapper {
     private final UserService userService;
     private final VoucherService voucherService;
 
-    public UserVoucher userVoucherDto2UserVoucher(UserVoucherDto userVoucherDto) {
+    public UserVoucher userVoucherDto2UserVoucher(UserVoucherDto userVoucherDto) throws DataNotFoundException {
         UserVoucher userVoucher = new UserVoucher();
         userVoucher.setUsed(userVoucherDto.isUsed());
         User user = userService.findById(userVoucherDto.getUserId())
-                .orElseThrow();
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
         Voucher voucher = voucherService.findById(userVoucherDto.getVoucherId())
-                .orElseThrow();
+                .orElseThrow(() -> new DataNotFoundException("voucher not found"));
         userVoucher.setVoucher(voucher);
         userVoucher.setUser(user);
         return userVoucher;

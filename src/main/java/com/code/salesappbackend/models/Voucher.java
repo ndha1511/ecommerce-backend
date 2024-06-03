@@ -1,5 +1,6 @@
 package com.code.salesappbackend.models;
 
+import com.code.salesappbackend.models.enums.Scope;
 import com.code.salesappbackend.models.enums.VoucherType;
 import jakarta.persistence.*;
 import lombok.*;
@@ -30,4 +31,6 @@ public class Voucher {
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime expiredDate;
     private Integer quantity;
+    @Enumerated(EnumType.STRING)
+    private Scope scope;
 }

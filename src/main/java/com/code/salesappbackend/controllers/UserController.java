@@ -49,7 +49,8 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseSuccess<?> updateUser(@PathVariable Long id, @RequestBody UserDto userDto) {
+    public ResponseSuccess<?> updateUser(@PathVariable Long id, @RequestBody UserDto userDto)
+            throws Exception {
         User user = userMapper.userDto2User(userDto);
         user.setId(id);
         return new ResponseSuccess<>(
@@ -60,7 +61,8 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseSuccess<?> updatePatchUser(@PathVariable Long id, @RequestBody Map<String, ?> data) {
+    public ResponseSuccess<?> updatePatchUser(@PathVariable Long id, @RequestBody Map<String, ?> data)
+            throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "updated user",

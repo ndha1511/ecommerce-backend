@@ -30,12 +30,13 @@ public class AddressController {
     }
 
     @PutMapping("/{id}")
-    public ResponseSuccess<?> updateAddress(@PathVariable Long id, @RequestBody @Valid AddressDto addressDto) {
+    public ResponseSuccess<?> updateAddress(@PathVariable Long id, @RequestBody @Valid AddressDto addressDto)
+            throws Exception {
         Address address = addressMapper.addressDto2Address(addressDto);
         address.setId(id);
         return new ResponseSuccess<>(HttpStatus.OK.value(),
                 "updated address",
-                addressService.save(address));
+                addressService.update(id, address));
     }
 
     @DeleteMapping("/{id}")
@@ -48,7 +49,8 @@ public class AddressController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseSuccess<?> patchAddress(@PathVariable Long id, @RequestBody Map<String, ?> data) {
+    public ResponseSuccess<?> patchAddress(@PathVariable Long id, @RequestBody Map<String, ?> data)
+            throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "updated address",

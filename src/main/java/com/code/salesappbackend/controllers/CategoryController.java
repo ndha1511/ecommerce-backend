@@ -1,11 +1,15 @@
 package com.code.salesappbackend.controllers;
 
+import com.code.salesappbackend.dtos.requests.CategoryDto;
+import com.code.salesappbackend.dtos.responses.ResponseSuccess;
+import com.code.salesappbackend.mappers.CategoryMapper;
 import com.code.salesappbackend.models.Category;
 import com.code.salesappbackend.services.interfaces.CategoryService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -14,21 +18,37 @@ import java.util.Map;
 public class CategoryController {
 
     private final CategoryService categoryService;
+    private final CategoryMapper categoryMapper;
 
     @GetMapping
-    public List<Category> getCategory() {
-        return categoryService.findAll();
+    public ResponseSuccess<?> getCategory() {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "get categories successfully",
+                categoryService.findAll()
+        );
     }
 
     @PostMapping
-    public Category addCategory(@RequestBody Category category) {
-        return categoryService.save(category);
+    public ResponseSuccess<?> addCategory(@RequestBody @Valid CategoryDto categoryDto)
+        throws Exception {
+        Category category = categoryMapper.categoryDto2Category(categoryDto);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "create category successfully",
+                categoryService.save(category)
+        );
     }
 
     @PutMapping("/{id}")
-    public Category updateCategory(@PathVariable Long id, @RequestBody Category category) {
+    public ResponseSuccess<?> updateCategory(@PathVariable Long id, @RequestBody  @Valid Category category)
+        throws Exception {
         category.setId(id);
-        return categoryService.save(category);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "updated category",
+                categoryService.update(id, category)
+        );
     }
 
     @DeleteMapping("/{id}")
@@ -38,7 +58,8 @@ public class CategoryController {
     }
 
     @PatchMapping("/{id}")
-    public Category patchCategory(@PathVariable Long id, @RequestBody Map<String, ?> data) {
+    public Category patchCategory(@PathVariable Long id, @RequestBody Map<String, ?> data)
+            throws Exception {
         return categoryService.updatePatch(id, data);
     }
 }

@@ -7,7 +7,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class AddressServiceImpl extends BaseServiceImpl<Address, Long> implements AddressService {
-
     public AddressServiceImpl(JpaRepository<Address, Long> repository) {
         super(repository);
     }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class UserVoucherImpl extends BaseServiceImpl<UserVoucher, UserVoucherId> implements UserVoucherService {
-
     public UserVoucherImpl(JpaRepository<UserVoucher, UserVoucherId> repository) {
         super(repository);
     }

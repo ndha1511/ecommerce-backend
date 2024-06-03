@@ -1,5 +1,6 @@
 package com.code.salesappbackend.models;
 
+import com.code.salesappbackend.models.enums.Scope;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -23,4 +24,6 @@ public class Notification {
     @Column(name = "notification_date")
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime notificationDate;
+    @Enumerated(EnumType.STRING)
+    private Scope scope;
 }

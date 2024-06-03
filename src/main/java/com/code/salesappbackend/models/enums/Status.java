@@ -1,6 +1,6 @@
 package com.code.salesappbackend.models.enums;
 
-public enum ProductStatus {
+public enum Status {
     ACTIVE,
     INACTIVE
 }

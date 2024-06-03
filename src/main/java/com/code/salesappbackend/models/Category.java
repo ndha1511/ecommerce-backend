@@ -1,5 +1,6 @@
 package com.code.salesappbackend.models;
 
+import com.code.salesappbackend.models.enums.Status;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,4 +20,7 @@ public class Category {
     private Long id;
     @Column(nullable = false, name = "category_name", unique = true)
     private String categoryName;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, name = "category_status")
+    private Status status;
 }
