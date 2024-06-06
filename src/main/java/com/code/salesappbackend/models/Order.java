@@ -4,10 +4,7 @@ import com.code.salesappbackend.models.enums.DeliveryMethod;
 import com.code.salesappbackend.models.enums.OrderStatus;
 import com.code.salesappbackend.models.enums.PaymentMethod;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 import java.time.LocalDateTime;
 
@@ -17,6 +14,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Entity
 @Table(name = "orders")
+@Builder
 public class Order extends BaseModel{
     @Id
     @Column(name = "order_id")

@@ -27,7 +27,6 @@ public class ProductMapper {
                 .productName(productDto.getProductName())
                 .description(productDto.getDescription())
                 .productStatus(Status.ACTIVE)
-                .thumbnail(productDto.getThumbnail())
                 .category(category)
                 .provider(provider)
                 .price(productDto.getPrice())

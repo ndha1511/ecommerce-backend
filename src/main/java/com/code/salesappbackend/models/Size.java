@@ -21,8 +21,8 @@ public class Size {
     @Enumerated(EnumType.STRING)
     @Column(name = "size_type")
     private SizeType sizeType;
-    @Column(name = "number_size")
+    @Column(name = "number_size", unique = true)
     private Short numberSize;
-    @Column(name = "text_size", length = 10)
+    @Column(name = "text_size", length = 10, unique = true)
     private String textSize;
 }

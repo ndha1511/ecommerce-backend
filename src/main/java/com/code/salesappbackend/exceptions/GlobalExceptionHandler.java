@@ -31,4 +31,10 @@ public class GlobalExceptionHandler {
         return new ResponseError(HttpStatus.NOT_FOUND.value(), List.of(ex.getMessage()));
     }
 
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ExceptionHandler(DataExistsException.class)
+    public ResponseError handleDataExistsException(DataExistsException ex) {
+        return new ResponseError(HttpStatus.BAD_REQUEST.value(), List.of(ex.getMessage()));
+    }
+
 }

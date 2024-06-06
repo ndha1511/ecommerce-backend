@@ -65,21 +65,26 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
         if(!productDto.getImages().isEmpty()) {
             List<MultipartFile> files = productDto.getImages();
             for (MultipartFile file : files) {
-//                if(!Objects.requireNonNull(file.getContentType()).startsWith("image/")) {
-//                    throw new DataExistsException("file is not image");
-//                }
+                if(!Objects.requireNonNull(file.getContentType()).startsWith("image/")) {
+                    throw new DataExistsException("file is not image");
+                }
                 try {
                     String path = s3Upload.uploadFile(file);
                     ProductImage productImage = new ProductImage();
                     productImage.setProduct(product);
                     productImage.setPath(path);
                     productImageRepository.save(productImage);
+                    if(productDto.getThumbnail() != null &&
+                            productDto.getThumbnail() == files.indexOf(file)
+                    ) {
+                        product.setThumbnail(path);
+                    }
                 } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
             }
 
         }
-        return product;
+        return super.save(product);
     }
 }

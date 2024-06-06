@@ -18,7 +18,7 @@ public class ProductDto {
     @NotNull(message = "price must be not null")
     private Double price;
     private String description;
-    private String thumbnail;
+    private Integer thumbnail;
     @NotNull(message = "category must be not null")
     private Long categoryId;
     @NotNull(message = "provider must be not null")

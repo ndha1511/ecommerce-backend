@@ -2,10 +2,7 @@ package com.code.salesappbackend.models;
 
 import com.code.salesappbackend.models.id_classes.OrderDetailId;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
@@ -14,6 +11,7 @@ import lombok.Setter;
 @Entity
 @Table(name = "order_details")
 @IdClass(OrderDetailId.class)
+@Builder
 public class OrderDetail {
     @Id
     @ManyToOne
