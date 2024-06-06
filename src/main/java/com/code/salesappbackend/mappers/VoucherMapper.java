@@ -15,6 +15,7 @@ public class VoucherMapper {
                 .minAmount(voucherDto.getMinAmount())
                 .maxPrice(voucherDto.getMaxPrice())
                 .quantity(voucherDto.getQuantity())
+                .scope(voucherDto.getScope())
                 .build();
     }
 }

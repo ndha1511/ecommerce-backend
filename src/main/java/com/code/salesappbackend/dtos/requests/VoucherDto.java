@@ -1,7 +1,9 @@
 package com.code.salesappbackend.dtos.requests;
 
 import com.code.salesappbackend.models.Voucher;
+import com.code.salesappbackend.models.enums.Scope;
 import com.code.salesappbackend.models.enums.VoucherType;
+import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,6 +25,9 @@ public class VoucherDto implements Serializable {
     private Float discount;
     private VoucherType voucherType;
     @NotNull(message = "expired date must be not null")
+    @Future(message = "expired date must be greater than current date")
     private LocalDateTime expiredDate;
     private Integer quantity;
+    @NotNull(message = "scope must be not null")
+    private Scope scope;
 }

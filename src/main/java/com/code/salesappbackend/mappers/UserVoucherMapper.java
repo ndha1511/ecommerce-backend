@@ -17,12 +17,12 @@ public class UserVoucherMapper {
     private final VoucherService voucherService;
 
     public UserVoucher userVoucherDto2UserVoucher(UserVoucherDto userVoucherDto) throws DataNotFoundException {
-        UserVoucher userVoucher = new UserVoucher();
-        userVoucher.setUsed(userVoucherDto.isUsed());
         User user = userService.findById(userVoucherDto.getUserId())
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
         Voucher voucher = voucherService.findById(userVoucherDto.getVoucherId())
                 .orElseThrow(() -> new DataNotFoundException("voucher not found"));
+        UserVoucher userVoucher = new UserVoucher();
+        userVoucher.setUsed(false);
         userVoucher.setVoucher(voucher);
         userVoucher.setUser(user);
         return userVoucher;
