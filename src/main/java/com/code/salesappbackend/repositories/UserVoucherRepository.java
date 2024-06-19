@@ -4,5 +4,5 @@ import com.code.salesappbackend.models.UserVoucher;
 import com.code.salesappbackend.models.id_classes.UserVoucherId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserVoucherRepository extends JpaRepository<UserVoucher, UserVoucherId> {
+public interface UserVoucherRepository extends BaseRepository<UserVoucher, UserVoucherId> {
 }

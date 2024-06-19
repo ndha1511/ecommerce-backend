@@ -1,6 +1,9 @@
 package com.code.salesappbackend.services.interfaces;
 
 import com.code.salesappbackend.exceptions.DataNotFoundException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.util.List;
 import java.util.Map;
@@ -13,4 +16,5 @@ public interface BaseService<T, ID> {
     void deleteById(ID id);
     T update(ID id, T t) throws DataNotFoundException;
     T updatePatch(ID id, Map<String, ?> data) throws DataNotFoundException;
+    Page<T> findAll(Pageable pageable, Specification<T> specification);
 }

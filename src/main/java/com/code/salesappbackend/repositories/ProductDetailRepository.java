@@ -6,6 +6,9 @@ import com.code.salesappbackend.models.ProductDetail;
 import com.code.salesappbackend.models.Size;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface ProductDetailRepository extends JpaRepository<ProductDetail, Long> {
+import java.util.List;
+
+public interface ProductDetailRepository extends BaseRepository<ProductDetail, Long> {
     boolean existsByColorAndProductAndSize(Color color, Product product, Size size);
+    List<ProductDetail> findByProductId(Long productId);
 }

@@ -58,9 +58,13 @@ public class CategoryController {
     }
 
     @PatchMapping("/{id}")
-    public Category patchCategory(@PathVariable Long id, @RequestBody Map<String, ?> data)
+    public ResponseSuccess<?> patchCategory(@PathVariable Long id, @RequestBody Map<String, ?> data)
             throws Exception {
-        return categoryService.updatePatch(id, data);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "updated category",
+                categoryService.updatePatch(id, data)
+        );
     }
 }
 

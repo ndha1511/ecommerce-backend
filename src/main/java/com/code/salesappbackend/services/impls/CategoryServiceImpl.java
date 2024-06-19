@@ -2,17 +2,17 @@ package com.code.salesappbackend.services.impls;
 
 import com.code.salesappbackend.exceptions.DataExistsException;
 import com.code.salesappbackend.models.Category;
+import com.code.salesappbackend.repositories.BaseRepository;
 import com.code.salesappbackend.repositories.CategoryRepository;
 import com.code.salesappbackend.services.interfaces.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class CategoryServiceImpl extends BaseServiceImpl<Category, Long> implements CategoryService {
     private CategoryRepository repository;
 
-    public CategoryServiceImpl(JpaRepository<Category, Long> repository) {
+    public CategoryServiceImpl(BaseRepository<Category, Long> repository) {
         super(repository);
     }
 

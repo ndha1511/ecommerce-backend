@@ -1,8 +1,11 @@
 package com.code.salesappbackend.services.impls;
 
 import com.code.salesappbackend.exceptions.DataNotFoundException;
+import com.code.salesappbackend.repositories.BaseRepository;
 import com.code.salesappbackend.services.interfaces.BaseService;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.io.Serializable;
 import java.lang.reflect.InvocationTargetException;
@@ -13,9 +16,9 @@ import java.util.Optional;
 import java.util.Set;
 
 public abstract class BaseServiceImpl<T, ID extends Serializable> implements BaseService<T, ID> {
-    private final JpaRepository<T, ID> repository;
+    private final BaseRepository<T, ID> repository;
 
-    public BaseServiceImpl(JpaRepository<T, ID> repository) {
+    public BaseServiceImpl(BaseRepository<T, ID> repository) {
         this.repository = repository;
     }
 
@@ -35,6 +38,11 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> implements Bas
     }
 
     @Override
+    public Page<T> findAll(Pageable pageable, Specification<T> specification) {
+        return repository.findAll(specification, pageable);
+    }
+
+    @Override
     public void deleteById(ID id) {
         repository.deleteById(id);
     }
@@ -45,6 +53,8 @@ public abstract class BaseServiceImpl<T, ID extends Serializable> implements Bas
                 .orElseThrow(() -> new DataNotFoundException("not found data"));
         return repository.save(t);
     }
+
+
 
     @Override
     public T updatePatch(ID id, Map<String, ?> data) throws DataNotFoundException {

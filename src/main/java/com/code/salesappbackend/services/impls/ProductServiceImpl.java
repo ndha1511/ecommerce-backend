@@ -1,18 +1,21 @@
 package com.code.salesappbackend.services.impls;
 
 import com.code.salesappbackend.dtos.requests.ProductDto;
+import com.code.salesappbackend.dtos.responses.ProductResponse;
 import com.code.salesappbackend.exceptions.DataExistsException;
 import com.code.salesappbackend.exceptions.DataNotFoundException;
 import com.code.salesappbackend.mappers.ProductMapper;
 import com.code.salesappbackend.models.Product;
+import com.code.salesappbackend.models.ProductDetail;
 import com.code.salesappbackend.models.ProductImage;
+import com.code.salesappbackend.repositories.BaseRepository;
+import com.code.salesappbackend.repositories.ProductDetailRepository;
 import com.code.salesappbackend.repositories.ProductImageRepository;
 import com.code.salesappbackend.repositories.ProductRepository;
 import com.code.salesappbackend.services.interfaces.ProductService;
 import com.code.salesappbackend.utils.CloudinaryUpload;
 import com.code.salesappbackend.utils.S3Upload;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -28,8 +31,9 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
     private ProductImageRepository productImageRepository;
     private CloudinaryUpload cloudinaryUpload;
     private S3Upload s3Upload;
+    private ProductDetailRepository productDetailRepository;
 
-    public ProductServiceImpl(JpaRepository<Product, Long> repository) {
+    public ProductServiceImpl(BaseRepository<Product, Long> repository) {
         super(repository);
     }
 
@@ -41,9 +45,15 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
     public void setProductRepository(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
+
     @Autowired
     public void setProductImageRepository(ProductImageRepository productImageRepository) {
         this.productImageRepository = productImageRepository;
+    }
+
+    @Autowired
+    public void setProductDetailRepository(ProductDetailRepository productDetailRepository) {
+        this.productDetailRepository = productDetailRepository;
     }
 
     @Autowired
@@ -87,4 +97,20 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
         }
         return super.save(product);
     }
+
+    @Override
+    public ProductResponse findProductById(Long id) throws DataNotFoundException{
+        Product product = super.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("product not found"));
+        List<ProductDetail> productDetails = productDetailRepository.findByProductId(id);
+        List<ProductImage> productImages = productImageRepository.findByProductId(id);
+        return ProductResponse.builder()
+                .product(product)
+                .productDetails(productDetails)
+                .productImages(productImages)
+                .build();
+    }
+
+
+
 }

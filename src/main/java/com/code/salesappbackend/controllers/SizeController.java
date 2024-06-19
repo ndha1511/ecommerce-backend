@@ -6,10 +6,7 @@ import com.code.salesappbackend.mappers.SizeMapper;
 import com.code.salesappbackend.services.interfaces.SizeService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/sizes")
@@ -24,6 +21,15 @@ public class SizeController {
                 HttpStatus.OK.value(),
                 "create size successfully",
                 sizeService.save(sizeMapper.sizeDto2Size(sizeDto))
+        );
+    }
+
+    @GetMapping
+    public ResponseSuccess<?> getAllSizes() {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "get size successfully",
+                sizeService.findAll()
         );
     }
 }

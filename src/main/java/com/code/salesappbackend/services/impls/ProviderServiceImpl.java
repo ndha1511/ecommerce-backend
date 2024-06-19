@@ -2,17 +2,17 @@ package com.code.salesappbackend.services.impls;
 
 import com.code.salesappbackend.exceptions.DataExistsException;
 import com.code.salesappbackend.models.Provider;
+import com.code.salesappbackend.repositories.BaseRepository;
 import com.code.salesappbackend.repositories.ProviderRepository;
 import com.code.salesappbackend.services.interfaces.ProviderService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 
 @Service
 public class ProviderServiceImpl extends BaseServiceImpl<Provider, Long> implements ProviderService {
     private ProviderRepository providerRepository;
 
-    public ProviderServiceImpl(JpaRepository<Provider, Long> repository) {
+    public ProviderServiceImpl(BaseRepository<Provider, Long> repository) {
         super(repository);
     }
 

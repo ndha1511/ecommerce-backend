@@ -4,5 +4,5 @@ import com.code.salesappbackend.models.UserNotification;
 import com.code.salesappbackend.models.id_classes.UserNotificationId;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface UserNotificationRepository extends JpaRepository<UserNotification, UserNotificationId> {
+public interface UserNotificationRepository extends BaseRepository<UserNotification, UserNotificationId> {
 }

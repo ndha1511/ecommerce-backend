@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
-public interface ProductPriceRepository extends JpaRepository<ProductPrice, Long> {
+public interface ProductPriceRepository extends BaseRepository<ProductPrice, Long> {
     List<ProductPrice> findAllByProductId(Long productId);
 }

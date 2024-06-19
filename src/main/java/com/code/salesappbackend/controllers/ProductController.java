@@ -6,10 +6,7 @@ import com.code.salesappbackend.services.interfaces.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/products")
@@ -24,6 +21,24 @@ public class ProductController {
                 HttpStatus.OK.value(),
                 "create product successfully",
                 productService.save(productDto)
+        );
+    }
+
+    @GetMapping
+    public ResponseSuccess<?> getAllProducts()  {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "get products successfully",
+                productService.findAll()
+        );
+    }
+
+    @GetMapping("/{id}")
+    public ResponseSuccess<?> getProductById(@PathVariable Long id) throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "get product successfully",
+                productService.findProductById(id)
         );
     }
 

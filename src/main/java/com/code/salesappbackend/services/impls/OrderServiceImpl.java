@@ -15,7 +15,6 @@ import com.code.salesappbackend.repositories.*;
 import com.code.salesappbackend.services.interfaces.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +39,7 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
     private UserVoucherRepository userVoucherRepository;
     private final VoucherUsagesRepository voucherUsagesRepository;
 
-    public OrderServiceImpl(JpaRepository<Order, String> repository,
+    public OrderServiceImpl(BaseRepository<Order, String> repository,
                             VoucherUsagesRepository voucherUsagesRepository) {
         super(repository);
         this.voucherUsagesRepository = voucherUsagesRepository;
@@ -89,7 +88,7 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
 
 
     @Override
-    @Transactional(rollbackFor = {DataNotFoundException.class})
+    @Transactional(rollbackFor = {DataNotFoundException.class, OutOfInStockException.class})
     public Order save(OrderDto orderDto) throws DataNotFoundException, OutOfInStockException {
         List<ProductOrderDto> productOrders = orderDto.getProductOrders();
         User user = userRepository.findById(orderDto.getUserId())
