@@ -23,7 +23,7 @@ public abstract class BaseCustomizationRepository<T> {
     public PageResponse getPageData(int pageNo, int pageSize, String[] search, String[] sort) {
         String sql = String.format("select o from %s o where 1=1", entityClass.getName());
         StringBuilder queryBuilder = new StringBuilder(sql);
-        Pattern pattern = Pattern.compile("(.*?)([<>]=?|:|-)(.*)");
+        Pattern pattern = Pattern.compile("(.*?)([<>]=?|:|-)([^-]*)-?(or)?");
         appendQueryBuilder(search, pattern, queryBuilder);
 
         Pattern patternSort = Pattern.compile("(\\w+?)(:)(asc|desc)");
@@ -53,7 +53,7 @@ public abstract class BaseCustomizationRepository<T> {
                 .data(data)
                 .totalPage((long) Math.ceil(((long)queryCount.getSingleResult() * 1.0)/pageSize))
                 .pageNo(pageNo)
-                .totalElement(data.toArray().length)
+                .totalElement(data.size())
                 .build();
     }
 
@@ -78,7 +78,8 @@ public abstract class BaseCustomizationRepository<T> {
                 Matcher matcher = pattern.matcher(s);
                 if(matcher.find()) {
                     String operator = OperatorQuery.getOperator(matcher.group(2));
-                    String format = String.format(" and o.%s %s ?%s", matcher.group(1), operator,
+                    String format = String.format(" %s o.%s %s ?%s", matcher.group(4) != null ? "or" : "and",
+                            matcher.group(1), operator,
                             Arrays.stream(search).toList().indexOf(s) + 1);
                     countQuery.append(format);
                 }

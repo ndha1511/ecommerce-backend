@@ -1,15 +1,11 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.ProductDto;
-import com.code.salesappbackend.dtos.responses.PageResponse;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
-import com.code.salesappbackend.models.Product;
+import com.code.salesappbackend.repositories.criteria.ProductCriteria;
 import com.code.salesappbackend.services.interfaces.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -18,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 @RequiredArgsConstructor
 public class ProductController {
     private final ProductService productService;
+    private final ProductCriteria productCriteria;
 
     @PostMapping
     public ResponseSuccess<?> addProduct(@Valid @ModelAttribute ProductDto productDto)
@@ -55,7 +52,7 @@ public class ProductController {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "get product page",
-                productService.getPageData(pageNo, pageSize, search, sort)
+                productCriteria.getPageDataCriteria(pageNo, pageSize, search, sort)
         );
 
     }
