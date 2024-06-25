@@ -1,10 +1,15 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.ProductDto;
+import com.code.salesappbackend.dtos.responses.PageResponse;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
+import com.code.salesappbackend.models.Product;
 import com.code.salesappbackend.services.interfaces.ProductService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,7 +21,7 @@ public class ProductController {
 
     @PostMapping
     public ResponseSuccess<?> addProduct(@Valid @ModelAttribute ProductDto productDto)
-        throws Exception {
+            throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "create product successfully",
@@ -25,7 +30,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseSuccess<?> getAllProducts()  {
+    public ResponseSuccess<?> getAllProducts() {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "get products successfully",
@@ -41,5 +46,32 @@ public class ProductController {
                 productService.findProductById(id)
         );
     }
+
+    @GetMapping("/page-product")
+    public ResponseSuccess<?> pageProduct(@RequestParam(defaultValue = "1") int pageNo,
+                                          @RequestParam(defaultValue = "10") int pageSize,
+                                          @RequestParam(required = false) String[] sort,
+                                          @RequestParam(required = false) String[] search)  {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "get product page",
+                productService.getPageData(pageNo, pageSize, search, sort)
+        );
+
+    }
+
+    @GetMapping("/test-criteria")
+    public ResponseSuccess<?> testCriteria(@RequestParam(defaultValue = "1") int pageNo,
+                                           @RequestParam(defaultValue = "10") int pageSize,
+                                           @RequestParam(required = false) String sort,
+                                           @RequestParam(required = false) String... search) {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "get product page",
+                null
+        );
+
+    }
+
 
 }

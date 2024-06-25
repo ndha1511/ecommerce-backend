@@ -1,6 +1,7 @@
 package com.code.salesappbackend.services.impls;
 
 import com.code.salesappbackend.dtos.requests.ProductDto;
+import com.code.salesappbackend.dtos.responses.PageResponse;
 import com.code.salesappbackend.dtos.responses.ProductResponse;
 import com.code.salesappbackend.exceptions.DataExistsException;
 import com.code.salesappbackend.exceptions.DataNotFoundException;
@@ -33,8 +34,10 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
     private S3Upload s3Upload;
     private ProductDetailRepository productDetailRepository;
 
+
+
     public ProductServiceImpl(BaseRepository<Product, Long> repository) {
-        super(repository);
+        super(repository, Product.class);
     }
 
     @Autowired
@@ -110,7 +113,5 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
                 .productImages(productImages)
                 .build();
     }
-
-
 
 }

@@ -8,6 +8,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class AddressServiceImpl extends BaseServiceImpl<Address, Long> implements AddressService {
     public AddressServiceImpl(BaseRepository<Address, Long> repository) {
-        super(repository);
+        super(repository, Address.class);
     }
 }

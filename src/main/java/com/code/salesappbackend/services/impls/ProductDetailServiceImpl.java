@@ -18,7 +18,7 @@ public class ProductDetailServiceImpl extends BaseServiceImpl<ProductDetail, Lon
     private ProductDetailRepository productDetailRepository;
     private ProductRepository productRepository;
     public ProductDetailServiceImpl(BaseRepository<ProductDetail, Long> repository) {
-        super(repository);
+        super(repository, ProductDetail.class);
     }
 
     @Autowired

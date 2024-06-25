@@ -9,6 +9,6 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserVoucherImpl extends BaseServiceImpl<UserVoucher, UserVoucherId> implements UserVoucherService {
     public UserVoucherImpl(BaseRepository<UserVoucher, UserVoucherId> repository) {
-        super(repository);
+        super(repository, UserVoucher.class);
     }
 }

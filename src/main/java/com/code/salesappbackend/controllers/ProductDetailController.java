@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/v1/productDetails")
+@RequestMapping("/api/v1/product-details")
 @RequiredArgsConstructor
 public class ProductDetailController {
     private final ProductDetailService productDetailService;
@@ -48,5 +48,18 @@ public class ProductDetailController {
                 HttpStatus.OK.value(),
                 "deleted product detail with id: " + id
         );
+    }
+
+    @GetMapping("/page-product-detail")
+    public ResponseSuccess<?> pageProduct(@RequestParam(defaultValue = "1") int pageNo,
+                                          @RequestParam(defaultValue = "10") int pageSize,
+                                          @RequestParam(required = false) String[] sort,
+                                          @RequestParam(required = false) String[] search)  {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "get product page",
+                productDetailService.getPageData(pageNo, pageSize, search, sort)
+        );
+
     }
 }

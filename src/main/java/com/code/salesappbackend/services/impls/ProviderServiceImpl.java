@@ -13,7 +13,7 @@ public class ProviderServiceImpl extends BaseServiceImpl<Provider, Long> impleme
     private ProviderRepository providerRepository;
 
     public ProviderServiceImpl(BaseRepository<Provider, Long> repository) {
-        super(repository);
+        super(repository, Provider.class);
     }
 
     @Autowired

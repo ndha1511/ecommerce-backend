@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class SizeServiceImpl extends BaseServiceImpl<Size, Long> implements SizeService {
     private SizeRepository sizeRepository;
     public SizeServiceImpl(BaseRepository<Size, Long> repository) {
-        super(repository);
+        super(repository, Size.class);
     }
     @Autowired
     public void setSizeRepository(SizeRepository sizeRepository) {

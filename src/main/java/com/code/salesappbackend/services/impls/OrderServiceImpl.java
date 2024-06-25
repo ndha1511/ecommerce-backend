@@ -41,7 +41,7 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
 
     public OrderServiceImpl(BaseRepository<Order, String> repository,
                             VoucherUsagesRepository voucherUsagesRepository) {
-        super(repository);
+        super(repository, Order.class);
         this.voucherUsagesRepository = voucherUsagesRepository;
     }
 

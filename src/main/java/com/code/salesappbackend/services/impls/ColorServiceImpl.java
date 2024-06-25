@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 public class ColorServiceImpl extends BaseServiceImpl<Color, Long> implements ColorService {
     private ColorRepository colorRepository;
     public ColorServiceImpl(BaseRepository<Color, Long> repository) {
-        super(repository);
+        super(repository, Color.class);
     }
     @Autowired
     public void setRepository(ColorRepository repository) {
