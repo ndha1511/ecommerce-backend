@@ -3,6 +3,7 @@ package com.code.salesappbackend.models;
 import com.code.salesappbackend.models.enums.DeliveryMethod;
 import com.code.salesappbackend.models.enums.OrderStatus;
 import com.code.salesappbackend.models.enums.PaymentMethod;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -24,6 +25,7 @@ public class Order extends BaseModel{
     private User user;
     @Column(name = "order_date")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime orderDate;
     @Enumerated(EnumType.STRING)
     @Column(name = "order_status")

@@ -19,5 +19,5 @@ public interface BaseService<T, ID> {
     T updatePatch(ID id, Map<String, ?> data) throws DataNotFoundException;
     Page<T> findAll(Pageable pageable, Specification<T> specification);
     Page<T> findAll(Pageable pageable);
-    PageResponse getPageData(int pageNo, int pageSize, String[] search, String[] sort);
+    PageResponse<?> getPageData(int pageNo, int pageSize, String[] search, String[] sort);
 }

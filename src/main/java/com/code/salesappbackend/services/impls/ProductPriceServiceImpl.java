@@ -10,4 +10,6 @@ public class ProductPriceServiceImpl extends BaseServiceImpl<ProductPrice, Long>
     public ProductPriceServiceImpl(BaseRepository<ProductPrice, Long> repository) {
         super(repository, ProductPrice.class);
     }
+
+
 }

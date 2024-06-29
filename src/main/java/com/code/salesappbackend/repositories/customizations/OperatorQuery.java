@@ -9,6 +9,7 @@ public class OperatorQuery {
             case "-" -> "=";
             case ">=" -> ">=";
             case "<=" -> "<=";
+            case "!" -> "";
             default -> "like";
         };
     }

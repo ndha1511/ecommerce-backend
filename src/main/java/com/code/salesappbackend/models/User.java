@@ -2,6 +2,7 @@ package com.code.salesappbackend.models;
 
 import com.code.salesappbackend.models.enums.Gender;
 import com.code.salesappbackend.models.enums.Role;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
@@ -35,6 +36,7 @@ public class User extends BaseModel{
     private Gender gender;
     @Column(name = "date_of_birth")
     @Temporal(TemporalType.DATE)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dateOfBirth;
     @Enumerated(EnumType.STRING)
     private Role role;

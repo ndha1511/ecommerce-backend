@@ -1,4 +1,4 @@
-package com.code.salesappbackend.dtos.responses;
+package com.code.salesappbackend.dtos.responses.products;
 
 import com.code.salesappbackend.models.Product;
 import com.code.salesappbackend.models.ProductDetail;

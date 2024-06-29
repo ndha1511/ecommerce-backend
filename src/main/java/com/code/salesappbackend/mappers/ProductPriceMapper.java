@@ -18,12 +18,14 @@ public class ProductPriceMapper {
         Product product = productService.findById(productPriceDto.getProductId())
                 .orElseThrow(() -> new DataNotFoundException("Product not found"));
         Double discountedPrice = product.getPrice() * productPriceDto.getDiscount();
+        Double discountedAmount = product.getPrice() - discountedPrice;
         return ProductPrice.builder()
                 .product(product)
                 .note(productPriceDto.getNote())
                 .expiredDate(productPriceDto.getExpiredDate())
                 .discount(productPriceDto.getDiscount())
                 .discountedPrice(discountedPrice)
+                .discountedAmount(discountedAmount)
                 .build();
     }
 }

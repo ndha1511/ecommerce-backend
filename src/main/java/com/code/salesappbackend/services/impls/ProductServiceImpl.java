@@ -2,7 +2,7 @@ package com.code.salesappbackend.services.impls;
 
 import com.code.salesappbackend.dtos.requests.ProductDto;
 import com.code.salesappbackend.dtos.responses.PageResponse;
-import com.code.salesappbackend.dtos.responses.ProductResponse;
+import com.code.salesappbackend.dtos.responses.products.ProductResponse;
 import com.code.salesappbackend.exceptions.DataExistsException;
 import com.code.salesappbackend.exceptions.DataNotFoundException;
 import com.code.salesappbackend.mappers.ProductMapper;
@@ -13,6 +13,7 @@ import com.code.salesappbackend.repositories.BaseRepository;
 import com.code.salesappbackend.repositories.ProductDetailRepository;
 import com.code.salesappbackend.repositories.ProductImageRepository;
 import com.code.salesappbackend.repositories.ProductRepository;
+import com.code.salesappbackend.repositories.customizations.ProductQuery;
 import com.code.salesappbackend.services.interfaces.ProductService;
 import com.code.salesappbackend.utils.CloudinaryUpload;
 import com.code.salesappbackend.utils.S3Upload;
@@ -33,8 +34,12 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
     private CloudinaryUpload cloudinaryUpload;
     private S3Upload s3Upload;
     private ProductDetailRepository productDetailRepository;
+    private ProductQuery productQuery;
 
-
+    @Autowired
+    public void setProductQuery(ProductQuery productQuery) {
+        this.productQuery = productQuery;
+    }
 
     public ProductServiceImpl(BaseRepository<Product, Long> repository) {
         super(repository, Product.class);
@@ -112,6 +117,11 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
                 .productDetails(productDetails)
                 .productImages(productImages)
                 .build();
+    }
+
+    @Override
+    public PageResponse<?> getProductsForUserRole(int pageNo, int pageSize, String[] search, String[] sort) throws NoSuchFieldException {
+        return productQuery.getPageData(pageNo, pageSize, search, sort);
     }
 
 }

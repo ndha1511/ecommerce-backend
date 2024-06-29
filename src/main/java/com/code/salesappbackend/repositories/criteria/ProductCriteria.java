@@ -23,13 +23,11 @@ public class ProductCriteria {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public PageResponse getPageDataCriteria(int pageNo, int pageSize, String[] search, String[] sort) {
+    public PageResponse<?> getPageDataCriteria(int pageNo, int pageSize, String[] search, String[] sort) {
         CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-        // builder -> and, or, >=, <=, equal, =, like, between
         CriteriaQuery<Product> criteriaQuery = builder.createQuery(Product.class);
-        // criteria -> select, where, group, having, order by,
         Root<Product> root = criteriaQuery.from(Product.class);
-        // root -> join, ánh xạ với entity
+
 
         List<Predicate> predicates = createPredicate(root, builder, search, false);
         List<Predicate> orPredicates = createPredicate(root, builder, search, true);
@@ -39,16 +37,13 @@ public class ProductCriteria {
         }
 
         criteriaQuery.where(predicates.toArray(Predicate[]::new));
-        // sort
         sortBy(root, builder, criteriaQuery, sort);
 
         TypedQuery<Product> query = entityManager.createQuery(criteriaQuery);
         query.setFirstResult((pageNo - 1) * pageSize);
         query.setMaxResults(pageSize);
-        // list product
         List<Product> products = query.getResultList();
 
-        // đếm số trang
         CriteriaBuilder countBuilder = entityManager.getCriteriaBuilder();
         CriteriaQuery<Long> criteriaCountQuery = countBuilder.createQuery(Long.class);
         Root<Product> countRoot = criteriaCountQuery.from(Product.class);

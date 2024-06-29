@@ -54,7 +54,7 @@ public class ProductDetailController {
     public ResponseSuccess<?> pageProduct(@RequestParam(defaultValue = "1") int pageNo,
                                           @RequestParam(defaultValue = "10") int pageSize,
                                           @RequestParam(required = false) String[] sort,
-                                          @RequestParam(required = false) String[] search)  {
+                                          @RequestParam(required = false) String[] search)  throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "get product page",

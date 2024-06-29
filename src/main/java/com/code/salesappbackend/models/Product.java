@@ -38,4 +38,6 @@ public class Product extends BaseModel {
     private Status productStatus;
     @Column(name = "total_quantity")
     private Integer totalQuantity;
+    @Column(name = "buy_quantity")
+    private Integer buyQuantity;
 }
