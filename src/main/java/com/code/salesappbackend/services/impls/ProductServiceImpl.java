@@ -89,7 +89,7 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
             throw new DataExistsException("product is exists");
         Product product = productMapper.productDto2Product(productDto);
         product = super.save(product);
-        if(!productDto.getImages().isEmpty()) {
+        if(productDto.getImages() != null && !productDto.getImages().isEmpty()) {
             List<MultipartFile> files = productDto.getImages();
             for (MultipartFile file : files) {
                 if(!Objects.requireNonNull(file.getContentType()).startsWith("image/")) {

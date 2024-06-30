@@ -8,10 +8,12 @@ import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
 
 @Service
 @RequiredArgsConstructor
@@ -56,5 +58,13 @@ public class ProductRedisServiceImpl implements ProductRedisService {
         String key = getRedisKey(pageNo, pageSize, search, sort);
         String json = objectMapper.writeValueAsString(products);
         redisTemplate.opsForValue().set(key, json);
+    }
+
+    @Override
+    public void clearCache() {
+        redisTemplate.execute((RedisCallback<Object>)  connection -> {
+            connection.serverCommands().flushAll();
+            return null;
+        });
     }
 }
