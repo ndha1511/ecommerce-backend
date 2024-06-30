@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.OrderDto;
+import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 import com.code.salesappbackend.services.interfaces.OrderService;
 import jakarta.validation.Valid;
@@ -19,7 +20,7 @@ public class OrderController {
     private final OrderService orderService;
 
     @PostMapping
-    public ResponseSuccess<?> createOrder(@RequestBody @Valid OrderDto orderDto)
+    public Response createOrder(@RequestBody @Valid OrderDto orderDto)
     throws Exception{
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),

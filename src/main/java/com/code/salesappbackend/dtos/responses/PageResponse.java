@@ -1,14 +1,15 @@
 package com.code.salesappbackend.dtos.responses;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 
+import java.util.List;
 
 
 @Getter
 @Setter
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class PageResponse<T> {
     private int pageNo;
     private long totalPage;

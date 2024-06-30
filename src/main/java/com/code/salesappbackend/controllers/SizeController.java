@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.SizeDto;
+import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 import com.code.salesappbackend.mappers.SizeMapper;
 import com.code.salesappbackend.services.interfaces.SizeService;
@@ -16,7 +17,7 @@ public class SizeController {
     private final SizeMapper sizeMapper;
 
     @PostMapping
-    public ResponseSuccess<?> addSize(@RequestBody SizeDto sizeDto) throws Exception {
+    public Response addSize(@RequestBody SizeDto sizeDto) throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "create size successfully",

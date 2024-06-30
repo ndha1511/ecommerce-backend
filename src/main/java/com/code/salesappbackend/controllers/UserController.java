@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.UserDto;
+import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 
 import com.code.salesappbackend.mappers.UserMapper;
@@ -21,7 +22,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @GetMapping
-    public ResponseSuccess<?> getAllUsers() {
+    public Response getAllUsers() {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "get users successfully",

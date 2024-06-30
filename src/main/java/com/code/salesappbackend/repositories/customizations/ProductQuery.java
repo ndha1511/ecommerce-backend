@@ -3,13 +3,11 @@ package com.code.salesappbackend.repositories.customizations;
 import com.code.salesappbackend.dtos.responses.PageResponse;
 import com.code.salesappbackend.dtos.responses.products.ProductUserResponse;
 import com.code.salesappbackend.models.Product;
-import com.code.salesappbackend.models.ProductPrice;
 import jakarta.persistence.Query;
 
 import jakarta.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
-import java.util.Arrays;
 
 
 
@@ -32,8 +30,8 @@ public class ProductQuery extends BaseCustomizationRepository<Product> {
     @Override
     public PageResponse<?> getPageData(int pageNo, int pageSize, String[] search, String[] sort) {
 
-        Class<Product> productClass = Product.class;
-        Class<ProductPrice> productPriceClass = ProductPrice.class;
+//        Class<Product> productClass = Product.class;
+//        Class<ProductPrice> productPriceClass = ProductPrice.class;
 
 
         StringBuilder queryBuilder = new StringBuilder(getQuery("new com.code.salesappbackend.dtos.responses.products.ProductUserResponse(p, pp.discount, pp.discountedPrice, pp.expiredDate)"));

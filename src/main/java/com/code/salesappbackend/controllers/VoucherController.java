@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.VoucherDto;
+import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 import com.code.salesappbackend.mappers.VoucherMapper;
 import com.code.salesappbackend.models.Voucher;
@@ -17,7 +18,7 @@ public class VoucherController {
     private final VoucherMapper voucherMapper;
 
     @PostMapping
-    public ResponseSuccess<?> addVoucher(@RequestBody VoucherDto voucherDto) {
+    public Response addVoucher(@RequestBody VoucherDto voucherDto) {
         Voucher voucher = voucherMapper.voucherDto2Voucher(voucherDto);
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),

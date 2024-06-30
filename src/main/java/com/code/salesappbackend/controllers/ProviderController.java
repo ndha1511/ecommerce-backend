@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.ProviderDto;
+import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 import com.code.salesappbackend.mappers.ProviderMapper;
 import com.code.salesappbackend.models.Provider;
@@ -18,7 +19,7 @@ public class ProviderController {
     private final ProviderMapper providerMapper;
 
     @GetMapping
-    public ResponseSuccess<?> getProviders() {
+    public Response getProviders() {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "get providers successfully",

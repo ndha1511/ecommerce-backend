@@ -14,9 +14,11 @@ import com.code.salesappbackend.repositories.ProductDetailRepository;
 import com.code.salesappbackend.repositories.ProductImageRepository;
 import com.code.salesappbackend.repositories.ProductRepository;
 import com.code.salesappbackend.repositories.customizations.ProductQuery;
+import com.code.salesappbackend.services.interfaces.ProductRedisService;
 import com.code.salesappbackend.services.interfaces.ProductService;
 import com.code.salesappbackend.utils.CloudinaryUpload;
 import com.code.salesappbackend.utils.S3Upload;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -35,6 +37,13 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
     private S3Upload s3Upload;
     private ProductDetailRepository productDetailRepository;
     private ProductQuery productQuery;
+    private ProductRedisService productRedisService;
+
+    @Autowired
+    public void setProductRedisService(ProductRedisService productRedisService) {
+        this.productRedisService = productRedisService;
+    }
+
 
     @Autowired
     public void setProductQuery(ProductQuery productQuery) {
@@ -120,8 +129,14 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
     }
 
     @Override
-    public PageResponse<?> getProductsForUserRole(int pageNo, int pageSize, String[] search, String[] sort) throws NoSuchFieldException {
-        return productQuery.getPageData(pageNo, pageSize, search, sort);
+    public PageResponse<?> getProductsForUserRole(int pageNo, int pageSize, String[] search, String[] sort)
+            throws JsonProcessingException {
+        PageResponse<?> result = productRedisService.getProductsInCache(pageNo, pageSize, search, sort);
+        if(result == null) {
+            result = productQuery.getPageData(pageNo, pageSize, search, sort);
+            productRedisService.saveProductsInCache(result, pageNo, pageSize, search, sort);
+        }
+        return result;
     }
 
 }

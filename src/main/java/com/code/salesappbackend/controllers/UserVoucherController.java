@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.UserVoucherDto;
+import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 import com.code.salesappbackend.mappers.UserVoucherMapper;
 import com.code.salesappbackend.models.UserVoucher;
@@ -18,7 +19,7 @@ public class UserVoucherController {
     private final UserVoucherMapper userVoucherMapper;
 
     @PostMapping
-    public ResponseSuccess<?> addUserVoucher(@RequestBody UserVoucherDto userVoucherDto)
+    public Response addUserVoucher(@RequestBody UserVoucherDto userVoucherDto)
         throws Exception {
         UserVoucher userVoucher = userVoucherMapper.userVoucherDto2UserVoucher(userVoucherDto);
         return new ResponseSuccess<>(

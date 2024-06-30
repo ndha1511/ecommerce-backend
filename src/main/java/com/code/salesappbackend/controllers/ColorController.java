@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.ColorDto;
+import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 import com.code.salesappbackend.mappers.ColorMapper;
 import com.code.salesappbackend.services.interfaces.ColorService;
@@ -17,7 +18,7 @@ public class ColorController {
     private final ColorMapper colorMapper;
 
     @PostMapping
-    public ResponseSuccess<?> addColor(@RequestBody @Valid ColorDto colorDto)
+    public Response addColor(@RequestBody @Valid ColorDto colorDto)
         throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),

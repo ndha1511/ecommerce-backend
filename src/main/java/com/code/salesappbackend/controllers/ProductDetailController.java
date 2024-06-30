@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.ProductDetailDto;
+import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 import com.code.salesappbackend.exceptions.DataNotFoundException;
 import com.code.salesappbackend.mappers.ProductDetailMapper;
@@ -20,7 +21,7 @@ public class ProductDetailController {
     private final ProductDetailMapper productDetailMapper;
 
     @PostMapping
-    public ResponseSuccess<?> addProductDetail(
+    public Response addProductDetail(
             @RequestBody @Valid ProductDetailDto productDetailDto)
      throws Exception {
         return new ResponseSuccess<>(
@@ -32,7 +33,7 @@ public class ProductDetailController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseSuccess<?> updateProductDetail(@PathVariable Long id, @RequestBody Map<String, ?> data)
+    public Response updateProductDetail(@PathVariable Long id, @RequestBody Map<String, ?> data)
             throws DataNotFoundException {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
@@ -42,7 +43,7 @@ public class ProductDetailController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseSuccess<?> deleteProductDetail(@PathVariable Long id) {
+    public Response deleteProductDetail(@PathVariable Long id) {
         productDetailService.deleteById(id);
         return  new ResponseSuccess<>(
                 HttpStatus.OK.value(),
@@ -51,7 +52,7 @@ public class ProductDetailController {
     }
 
     @GetMapping("/page-product-detail")
-    public ResponseSuccess<?> pageProduct(@RequestParam(defaultValue = "1") int pageNo,
+    public Response pageProduct(@RequestParam(defaultValue = "1") int pageNo,
                                           @RequestParam(defaultValue = "10") int pageSize,
                                           @RequestParam(required = false) String[] sort,
                                           @RequestParam(required = false) String[] search)  throws Exception {

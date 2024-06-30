@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.ProductPriceDto;
+import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 import com.code.salesappbackend.mappers.ProductPriceMapper;
 import com.code.salesappbackend.services.interfaces.ProductPriceService;
@@ -21,7 +22,7 @@ public class ProductPriceController {
     private final ProductPriceMapper productPriceMapper;
 
     @PostMapping
-    public ResponseSuccess<?> addProductPrice(
+    public Response addProductPrice(
             @RequestBody @Valid ProductPriceDto productPriceDto)
     throws Exception {
         return new ResponseSuccess<>(

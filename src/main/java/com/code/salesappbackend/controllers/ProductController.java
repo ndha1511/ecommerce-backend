@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.ProductDto;
+import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 import com.code.salesappbackend.repositories.criteria.ProductCriteria;
 import com.code.salesappbackend.services.interfaces.ProductService;
@@ -17,7 +18,7 @@ public class ProductController {
     private final ProductCriteria productCriteria;
 
     @PostMapping
-    public ResponseSuccess<?> addProduct(@Valid @ModelAttribute ProductDto productDto)
+    public Response addProduct(@Valid @ModelAttribute ProductDto productDto)
             throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
@@ -27,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping
-    public ResponseSuccess<?> getAllProducts() {
+    public Response getAllProducts() {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "get products successfully",
@@ -36,7 +37,7 @@ public class ProductController {
     }
 
     @GetMapping("/{id}")
-    public ResponseSuccess<?> getProductById(@PathVariable Long id) throws Exception {
+    public Response getProductById(@PathVariable Long id) throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "get product successfully",
@@ -45,7 +46,7 @@ public class ProductController {
     }
 
     @GetMapping("/page-product")
-    public ResponseSuccess<?> pageProduct(@RequestParam(defaultValue = "1") int pageNo,
+    public Response pageProduct(@RequestParam(defaultValue = "1") int pageNo,
                                           @RequestParam(defaultValue = "10") int pageSize,
                                           @RequestParam(required = false) String[] sort,
                                           @RequestParam(required = false) String[] search)  throws Exception{
@@ -58,10 +59,10 @@ public class ProductController {
     }
 
     @GetMapping("/test-criteria")
-    public ResponseSuccess<?> testCriteria(@RequestParam(defaultValue = "1") int pageNo,
-                                           @RequestParam(defaultValue = "10") int pageSize,
-                                           @RequestParam(required = false) String sort,
-                                           @RequestParam(required = false) String... search) {
+    public Response testCriteria(@RequestParam(defaultValue = "1") int pageNo,
+                                 @RequestParam(defaultValue = "10") int pageSize,
+                                 @RequestParam(required = false) String sort,
+                                 @RequestParam(required = false) String... search) {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "get product page",
