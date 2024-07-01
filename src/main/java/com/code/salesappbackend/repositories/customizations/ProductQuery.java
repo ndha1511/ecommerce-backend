@@ -37,7 +37,6 @@ public class ProductQuery extends BaseCustomizationRepository<Product> {
         StringBuilder queryBuilder = new StringBuilder(getQuery("new com.code.salesappbackend.dtos.responses.products.ProductUserResponse(p, pp.discount, pp.discountedPrice, pp.expiredDate)"));
 
         appendQueryBuilder(search, queryBuilder, " %s p.%s %s ?%s");
-        System.out.println(queryBuilder);
         sortBy(queryBuilder, " order by p.%s %s", sort);
         TypedQuery<ProductUserResponse> query = entityManager.createQuery(queryBuilder.toString(), ProductUserResponse.class);
         query.setFirstResult((pageNo - 1) * pageSize);
