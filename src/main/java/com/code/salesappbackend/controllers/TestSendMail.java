@@ -28,4 +28,19 @@ public class TestSendMail {
         return "send mail successfully";
     }
 
+    @GetMapping
+    public String test() {
+        return "test token";
+    }
+
+    @GetMapping("/user")
+    public String testUser() {
+        return "test token role user";
+    }
+
+    @GetMapping("/admin")
+    public String testAdmin() {
+        return "test token role admin";
+    }
+
 }

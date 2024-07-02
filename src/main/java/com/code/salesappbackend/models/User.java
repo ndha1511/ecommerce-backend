@@ -16,7 +16,7 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "users")
 @Builder
-public class User extends BaseModel{
+public class User extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
@@ -43,4 +43,6 @@ public class User extends BaseModel{
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
+    private boolean verify;
+    private String otp;
 }
