@@ -1,7 +1,8 @@
 package com.code.salesappbackend.configurations;
 
 import com.code.salesappbackend.services.interfaces.JwtService;
-import com.code.salesappbackend.services.interfaces.UserService;
+import com.code.salesappbackend.services.interfaces.UserDetailService;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,13 +20,13 @@ import java.io.IOException;
 @Component
 @RequiredArgsConstructor
 public class PreFilter extends OncePerRequestFilter {
-    private final UserService userService;
+    private final UserDetailService userDetailService;
     private final JwtService jwtService;
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
                                     @NonNull FilterChain filterChain)
-            throws ServletException, IOException {
+            throws ServletException, IOException, ExpiredJwtException {
         final String header = request.getHeader("Authorization");
         if (header == null || !header.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
@@ -34,7 +35,7 @@ public class PreFilter extends OncePerRequestFilter {
         final String token = header.substring(7);
         final String email = jwtService.extractEmail(token);
         if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
-            UserDetails userDetails = userService.loadUserByUsername(email);
+            UserDetails userDetails = userDetailService.loadUserByUsername(email);
             boolean validate = jwtService.validateToken(token, userDetails);
             if(validate) {
                 UsernamePasswordAuthenticationToken authentication =

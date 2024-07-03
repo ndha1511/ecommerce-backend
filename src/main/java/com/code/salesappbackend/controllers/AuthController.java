@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers;
 
 import com.code.salesappbackend.dtos.requests.LoginRequestDto;
+import com.code.salesappbackend.dtos.requests.ResetPasswordRequest;
 import com.code.salesappbackend.dtos.requests.UserRegisterDto;
 import com.code.salesappbackend.dtos.requests.VerifyEmailDto;
 import com.code.salesappbackend.dtos.responses.Response;
@@ -50,4 +51,47 @@ public class AuthController {
                 authService.verifyEmail(verifyEmailDto)
         );
     }
+
+    @PostMapping("/refresh-token")
+    public Response refreshToken(@RequestBody String refreshToken)
+            throws Exception{
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "refresh token successfully",
+                authService.refreshToken(refreshToken)
+        );
+    }
+
+    @PostMapping("/get-verify-code")
+    public Response getVerifyCode(@RequestBody String email)
+            throws Exception{
+        authService.sendVerificationEmail(email);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "sent verification code successfully",
+                null
+        );
+    }
+
+    @PostMapping("/verify-reset-password-code")
+    public Response verifyResetPasswordCode(@RequestBody VerifyEmailDto verifyEmailDto)
+    throws Exception{
+        authService.verificationEmailForResetPassword(verifyEmailDto);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "verify successfully",
+                null
+        );
+    }
+
+    @PostMapping("/reset-password")
+    public Response resetPassword(@RequestBody ResetPasswordRequest resetPasswordRequest)
+    throws Exception{
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "reset password successfully",
+                authService.resetPassword(resetPasswordRequest)
+        );
+    }
+
 }

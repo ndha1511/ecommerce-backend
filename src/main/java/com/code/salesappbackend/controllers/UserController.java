@@ -1,5 +1,6 @@
 package com.code.salesappbackend.controllers;
 
+import com.code.salesappbackend.dtos.requests.ChangePasswordRequest;
 import com.code.salesappbackend.dtos.requests.UserDto;
 import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
@@ -31,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping
-    public ResponseSuccess<?> createUser(@RequestBody UserDto userDto) {
+    public Response createUser(@RequestBody UserDto userDto) {
         User user = userMapper.userDto2User(userDto);
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
@@ -41,7 +42,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    public ResponseSuccess<?> getUserById(@PathVariable Long id) {
+    public Response getUserById(@PathVariable Long id) {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "find user successfully",
@@ -50,7 +51,7 @@ public class UserController {
     }
 
     @PutMapping("/{id}")
-    public ResponseSuccess<?> updateUser(@PathVariable Long id, @RequestBody UserDto userDto)
+    public Response updateUser(@PathVariable Long id, @RequestBody UserDto userDto)
             throws Exception {
         User user = userMapper.userDto2User(userDto);
         user.setId(id);
@@ -62,12 +63,22 @@ public class UserController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseSuccess<?> updatePatchUser(@PathVariable Long id, @RequestBody Map<String, ?> data)
+    public Response updatePatchUser(@PathVariable Long id, @RequestBody Map<String, ?> data)
             throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "updated user",
                 userService.updatePatch(id, data)
+        );
+    }
+
+    @PostMapping("/change-password")
+    public Response changePassword(@RequestBody ChangePasswordRequest changePasswordRequest)
+    throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "change password successfully",
+                userService.changePassword(changePasswordRequest)
         );
     }
 }

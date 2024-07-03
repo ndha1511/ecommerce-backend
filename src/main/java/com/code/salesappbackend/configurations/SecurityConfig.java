@@ -1,6 +1,6 @@
 package com.code.salesappbackend.configurations;
 
-import com.code.salesappbackend.services.interfaces.UserService;
+import com.code.salesappbackend.services.interfaces.UserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -8,6 +8,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
@@ -23,8 +24,9 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
-    private final UserService userService;
+    private final UserDetailService userDetailService;
     private final PreFilter preFilter;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -33,7 +35,7 @@ public class SecurityConfig {
 
     @Bean
     public UserDetailsService userDetailsService() {
-        return userService;
+        return userDetailService;
     }
 
     @Bean
@@ -56,6 +58,7 @@ public class SecurityConfig {
                             "/api/v1/sizes/**").permitAll();
                     author.requestMatchers(HttpMethod.PATCH,"/api/v1/products/**").hasRole("USER");
                     author.requestMatchers(HttpMethod.PUT,"/api/v1/products/**").hasRole("USER");
+                    author.requestMatchers("/api/v1/users/**").authenticated();
                     author.requestMatchers(HttpMethod.POST, "api/v1/orders").authenticated();
                     author.anyRequest().hasRole("ADMIN");
                 })
@@ -63,6 +66,8 @@ public class SecurityConfig {
                         httpSessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(Customizer.withDefaults())
+                .httpBasic(basic -> basic.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .build();
     }
 

@@ -43,4 +43,5 @@ public class GlobalExceptionHandler {
         return new ResponseError(HttpStatus.BAD_REQUEST.value(), List.of(ex.getMessage()));
     }
 
+
 }
