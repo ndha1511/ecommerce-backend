@@ -15,5 +15,10 @@
 --         CHECK (role::text = ANY (ARRAY['ROLE_USER'::character varying, 'ROLE_ADMIN'::character varying]::text[]));
 
 
+-- alter table users
+-- add otp_reset_password varchar(6);
+
 alter table users
-add otp_reset_password varchar(6);
+add facebook_account_id varchar(255),
+add google_account_id varchar(255),
+add avatar_url varchar(255)

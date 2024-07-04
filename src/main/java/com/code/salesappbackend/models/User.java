@@ -47,4 +47,10 @@ public class User extends BaseModel {
     private String otp;
     @Column(name = "otp_reset_password")
     private String otpResetPassword;
+    @Column(name = "facebook_account_id")
+    private String facebookAccountId;
+    @Column(name = "google_account_id")
+    private String googleAccountId;
+    @Column(name = "avatar_url")
+    private String avatarUrl;
 }

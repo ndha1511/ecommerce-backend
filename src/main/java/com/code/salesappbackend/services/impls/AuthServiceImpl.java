@@ -16,6 +16,7 @@ import com.code.salesappbackend.repositories.UserRepository;
 import com.code.salesappbackend.services.interfaces.AuthService;
 import com.code.salesappbackend.services.interfaces.EmailService;
 import com.code.salesappbackend.services.interfaces.JwtService;
+import com.code.salesappbackend.services.interfaces.TokenService;
 import com.code.salesappbackend.utils.EmailDetails;
 import jakarta.mail.MessagingException;
 import lombok.RequiredArgsConstructor;
@@ -39,6 +40,7 @@ public class AuthServiceImpl implements AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final TokenRepository tokenRepository;
+    private final TokenService tokenService;
 
     @Override
     public void register(UserRegisterDto userRegisterDto) throws DataExistsException, MessagingException {
@@ -67,7 +69,7 @@ public class AuthServiceImpl implements AuthService {
         token.setRefreshToken(jwtService.generateRefreshToken(new HashMap<>(), userDetail));
         token.setUser(user);
         token.setExpiredDate(LocalDateTime.now());
-        saveToken(user, token);
+        tokenService.saveToken(user, token);
         return LoginResponse.builder()
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
@@ -92,7 +94,7 @@ public class AuthServiceImpl implements AuthService {
         token.setRefreshToken(jwtService.generateRefreshToken(new HashMap<>(), userDetail));
         token.setUser(user);
         token.setExpiredDate(LocalDateTime.now());
-        saveToken(user, token);
+        tokenService.saveToken(user, token);
         return LoginResponse.builder()
                 .accessToken(token.getAccessToken())
                 .refreshToken(token.getRefreshToken())
@@ -176,14 +178,7 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    private void saveToken(User user, Token token) {
-        List<Token> tokens = tokenRepository.findAllByUserOrderByExpiredDateDesc(user);
-        if(!tokens.isEmpty() && tokens.size() >= 2) {
-            Token tokenDelete = tokens.get(tokens.size() - 1);
-            tokenRepository.delete(tokenDelete);
-        }
-        tokenRepository.save(token);
-    }
+
 
     private User mapToUser(UserRegisterDto userRegisterDto) throws DataExistsException {
         if(userRepository.existsByEmail(userRegisterDto.getEmail())) {

@@ -1,5 +1,6 @@
 package com.code.salesappbackend.configurations;
 
+import com.code.salesappbackend.oauth2.Oauth2SuccessLogin;
 import com.code.salesappbackend.services.interfaces.UserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -27,6 +28,7 @@ public class SecurityConfig {
     private final UserDetailService userDetailService;
     private final PreFilter preFilter;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final Oauth2SuccessLogin oauth2SuccessLogin;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -61,6 +63,9 @@ public class SecurityConfig {
                     author.requestMatchers("/api/v1/users/**").authenticated();
                     author.requestMatchers(HttpMethod.POST, "api/v1/orders").authenticated();
                     author.anyRequest().hasRole("ADMIN");
+                })
+                .oauth2Login(oauth2 -> {
+                    oauth2.successHandler(oauth2SuccessLogin);
                 })
                 .sessionManagement(httpSessionManager ->
                         httpSessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))

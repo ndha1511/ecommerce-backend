@@ -7,6 +7,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.web.AuthenticationEntryPoint;
@@ -16,6 +17,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
 
     @Override
@@ -23,12 +25,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
                          HttpServletResponse response,
                          AuthenticationException authException)
             throws IOException, ServletException {
-        Throwable cause = authException.getCause();
-        if (cause instanceof ExpiredJwtException) {
-            response.sendError(HttpStatus.UNAUTHORIZED.value(), cause.getMessage());
-        } else {
-            response.sendError(HttpStatus.BAD_REQUEST.value(), authException.getMessage());
-        }
-
+        log.info(authException.getMessage());
+        response.sendError(HttpStatus.UNAUTHORIZED.value(), authException.getMessage());
     }
 }
