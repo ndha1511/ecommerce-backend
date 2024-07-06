@@ -66,4 +66,10 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
                 .refreshToken(newToken.getRefreshToken())
                 .build();
     }
+
+    @Override
+    public User getUserByEmail(String email) throws DataNotFoundException {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
+    }
 }

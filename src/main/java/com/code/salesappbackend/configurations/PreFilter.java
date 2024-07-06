@@ -9,12 +9,15 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import org.springframework.web.servlet.HandlerExceptionResolver;
 
 import java.io.IOException;
 @Component
@@ -22,6 +25,12 @@ import java.io.IOException;
 public class PreFilter extends OncePerRequestFilter {
     private final UserDetailService userDetailService;
     private final JwtService jwtService;
+    private HandlerExceptionResolver resolver;
+
+    @Autowired
+    public void setResolver(@Qualifier("handlerExceptionResolver") HandlerExceptionResolver resolver) {
+        this.resolver = resolver;
+    }
     @Override
     protected void doFilterInternal(@NonNull HttpServletRequest request,
                                     @NonNull HttpServletResponse response,
@@ -33,7 +42,13 @@ public class PreFilter extends OncePerRequestFilter {
             return;
         }
         final String token = header.substring(7);
-        final String email = jwtService.extractEmail(token);
+        String email;
+        try {
+            email = jwtService.extractEmail(token);
+        } catch (IllegalArgumentException | ExpiredJwtException e) {
+            resolver.resolveException(request, response, null, e);
+            return;
+        }
         if(email != null && SecurityContextHolder.getContext().getAuthentication() == null) {
             UserDetails userDetails = userDetailService.loadUserByUsername(email);
             boolean validate = jwtService.validateToken(token, userDetails);

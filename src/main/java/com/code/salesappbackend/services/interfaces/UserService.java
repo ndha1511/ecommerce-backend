@@ -7,4 +7,5 @@ import com.code.salesappbackend.models.User;
 
 public interface UserService extends BaseService<User, Long>{
     LoginResponse changePassword(ChangePasswordRequest changePasswordRequest) throws DataNotFoundException;
+    User getUserByEmail(String email) throws DataNotFoundException;
 }

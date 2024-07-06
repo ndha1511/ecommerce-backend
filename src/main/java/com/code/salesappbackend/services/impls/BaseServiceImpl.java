@@ -18,6 +18,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public abstract class BaseServiceImpl<T, ID extends Serializable> extends BaseCustomizationRepository<T> implements BaseService<T, ID> {
+
     private final BaseRepository<T, ID> repository;
 
     public BaseServiceImpl(BaseRepository<T, ID> repository, Class<T> entityClass) {

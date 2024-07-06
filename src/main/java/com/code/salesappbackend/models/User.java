@@ -20,6 +20,7 @@ public class User extends BaseModel {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
+    @JsonIgnore
     private Long id;
     @Column(nullable = false)
     private String name;
@@ -30,7 +31,6 @@ public class User extends BaseModel {
     private String password;
     @Column(nullable = false, name = "phone_number",
             length = 10)
-    @JsonIgnore
     private String phoneNumber;
     @Enumerated(EnumType.STRING)
     private Gender gender;
@@ -43,8 +43,11 @@ public class User extends BaseModel {
     @OneToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "address_id")
     private Address address;
+    @JsonIgnore
     private boolean verify;
+    @JsonIgnore
     private String otp;
+    @JsonIgnore
     @Column(name = "otp_reset_password")
     private String otpResetPassword;
     @Column(name = "facebook_account_id")

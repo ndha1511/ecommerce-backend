@@ -1,7 +1,9 @@
 package com.code.salesappbackend.exceptions;
 
 import com.code.salesappbackend.dtos.responses.ResponseError;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -41,6 +43,18 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(OutOfInStockException.class)
     public ResponseError handleOutOfInStockException(OutOfInStockException ex) {
         return new ResponseError(HttpStatus.BAD_REQUEST.value(), List.of(ex.getMessage()));
+    }
+
+    @ResponseStatus(HttpStatus.FORBIDDEN)
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseError handleAuthenticationException(AuthenticationException ex) {
+        return new ResponseError(HttpStatus.FORBIDDEN.value(), List.of(ex.getMessage()));
+    }
+
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseError handleExpiredToken(ExpiredJwtException ex) {
+        return new ResponseError(HttpStatus.UNAUTHORIZED.value(), List.of(ex.getMessage()));
     }
 
 

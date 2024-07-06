@@ -7,15 +7,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
-import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -30,14 +27,10 @@ public class SecurityConfig {
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final Oauth2SuccessLogin oauth2SuccessLogin;
 
+
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
-    }
-
-    @Bean
-    public UserDetailsService userDetailsService() {
-        return userDetailService;
     }
 
     @Bean
@@ -64,26 +57,20 @@ public class SecurityConfig {
                     author.requestMatchers(HttpMethod.POST, "api/v1/orders").authenticated();
                     author.anyRequest().hasRole("ADMIN");
                 })
-                .oauth2Login(oauth2 -> {
-                    oauth2.successHandler(oauth2SuccessLogin);
-                })
+                .oauth2Login(oauth2 -> oauth2.successHandler(oauth2SuccessLogin))
                 .sessionManagement(httpSessionManager ->
                         httpSessionManager.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider())
                 .addFilterBefore(preFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(Customizer.withDefaults())
-                .httpBasic(basic -> basic.authenticationEntryPoint(jwtAuthenticationEntryPoint))
+                .exceptionHandling(exHandler -> exHandler.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .build();
     }
 
 
-
-
-
     @Bean
-    public AuthenticationProvider authenticationProvider() {
+    public DaoAuthenticationProvider authenticationProvider() {
         DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userDetailsService());
+        authProvider.setUserDetailsService(userDetailService);
         authProvider.setPasswordEncoder(passwordEncoder());
         return authProvider;
     }

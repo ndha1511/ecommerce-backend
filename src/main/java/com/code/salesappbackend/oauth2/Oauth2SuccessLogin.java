@@ -8,10 +8,11 @@ import com.code.salesappbackend.models.enums.Role;
 import com.code.salesappbackend.repositories.UserRepository;
 import com.code.salesappbackend.services.interfaces.JwtService;
 import com.code.salesappbackend.services.interfaces.TokenService;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
@@ -30,7 +31,8 @@ public class Oauth2SuccessLogin implements AuthenticationSuccessHandler {
     private final UserRepository userRepository;
     private final JwtService jwtService;
     private final TokenService tokenService;
-    private final ObjectMapper objectMapper;
+    @Value("${front-end.url}")
+    private String frontendUrl;
 
     @Override
     public void onAuthenticationSuccess(
@@ -82,9 +84,22 @@ public class Oauth2SuccessLogin implements AuthenticationSuccessHandler {
         if(userDb.getFacebookAccountId() == null) userDb.setGoogleAccountId(user.getGoogleAccountId());
         userRepository.save(userDb);
         LoginResponse loginResponse = handlerLogin(userDb);
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        objectMapper.writeValue(response.getWriter(), loginResponse);
+
+        // Set cookies
+        Cookie accessTokenCookie = new Cookie("accessToken", loginResponse.getAccessToken());
+//        accessTokenCookie.setSecure(true); for https
+        accessTokenCookie.setPath("/");
+        accessTokenCookie.setMaxAge(30);
+
+        Cookie refreshTokenCookie = new Cookie("refreshToken", loginResponse.getRefreshToken());
+        refreshTokenCookie.setPath("/");
+        refreshTokenCookie.setMaxAge(30);
+
+        response.addCookie(accessTokenCookie);
+        response.addCookie(refreshTokenCookie);
+
+        String url = String.format("%s/auth/login-success?email=%s", frontendUrl, userDb.getEmail());
+        response.sendRedirect(url);
     }
 
     private LoginResponse handlerLogin(User user) {

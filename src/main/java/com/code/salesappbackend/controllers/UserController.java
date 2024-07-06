@@ -41,12 +41,13 @@ public class UserController {
         );
     }
 
-    @GetMapping("/{id}")
-    public Response getUserById(@PathVariable Long id) {
+    @GetMapping("/{email}")
+    public Response getUserById(@PathVariable String email)
+            throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "find user successfully",
-                userService.findById(id)
+                userService.getUserByEmail(email)
         );
     }
 
