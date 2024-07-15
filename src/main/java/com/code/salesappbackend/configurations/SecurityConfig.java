@@ -55,7 +55,7 @@ public class SecurityConfig {
                     author.requestMatchers(HttpMethod.PUT,"/api/v1/products/**").hasRole("USER");
                     author.requestMatchers("/api/v1/users/**").authenticated();
                     author.requestMatchers(HttpMethod.POST, "api/v1/orders").authenticated();
-                    author.anyRequest().hasRole("ADMIN");
+                    author.anyRequest().permitAll(); // sau này sửa lại
                 })
                 .oauth2Login(oauth2 -> oauth2.successHandler(oauth2SuccessLogin))
                 .sessionManagement(httpSessionManager ->

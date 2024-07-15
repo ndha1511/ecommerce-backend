@@ -10,10 +10,7 @@ import com.code.salesappbackend.services.interfaces.AuthService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/v1/auth")
@@ -62,8 +59,8 @@ public class AuthController {
         );
     }
 
-    @PostMapping("/get-verify-code")
-    public Response getVerifyCode(@RequestBody String email)
+    @GetMapping("/get-verify-code/{email}")
+    public Response getVerifyCode(@PathVariable String email)
             throws Exception{
         authService.sendVerificationEmail(email);
         return new ResponseSuccess<>(
@@ -91,6 +88,28 @@ public class AuthController {
                 HttpStatus.OK.value(),
                 "reset password successfully",
                 authService.resetPassword(resetPasswordRequest)
+        );
+    }
+
+    @GetMapping("/resend-verify-code/{email}")
+    public Response resendVerifyCode(@PathVariable String email)
+            throws Exception {
+        authService.resendVerificationEmail(email);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "resend verify code successfully",
+               null
+        );
+    }
+
+    @PostMapping("/logout")
+    public Response logout(@RequestBody String accessToken)
+    throws Exception {
+        authService.logout(accessToken);
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "logout successfully",
+                null
         );
     }
 

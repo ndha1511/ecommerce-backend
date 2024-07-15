@@ -57,6 +57,12 @@ public class GlobalExceptionHandler {
         return new ResponseError(HttpStatus.UNAUTHORIZED.value(), List.of(ex.getMessage()));
     }
 
+    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ExceptionHandler(UserNotVerifyException.class)
+    public ResponseError handleNotVerifyEmail(UserNotVerifyException ex) {
+        return new ResponseError(HttpStatus.UNAUTHORIZED.value(), List.of(ex.getMessage()));
+    }
+
 
 
 

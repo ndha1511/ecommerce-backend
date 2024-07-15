@@ -62,7 +62,9 @@ public class AuthServiceImpl implements AuthService {
         String password = loginRequestDto.getPassword();
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("email is not exist"));
+
         authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(email, password));
+
         UserDetail userDetail = new UserDetail(user);
 
         Token token = new Token();
@@ -179,6 +181,26 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    @Override
+    public void resendVerificationEmail(String email) throws MessagingException, DataNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("email is not exist"));
+        user.setOtp(getOtp());
+        userRepository.save(user);
+        EmailDetails emailDetails = EmailDetails.builder()
+                .recipient(user.getEmail())
+                .subject("Mã otp xác thực tên shop")
+                .msgBody(user.getOtp())
+                .build();
+        emailService.sendHtmlMail(emailDetails);
+    }
+
+    @Override
+    public void logout(String accessToken) throws DataNotFoundException {
+        Token token = tokenRepository.findByAccessToken(accessToken)
+                .orElseThrow(() -> new DataNotFoundException("token not found"));
+        tokenRepository.delete(token);
+    }
 
 
     private User mapToUser(UserRegisterDto userRegisterDto) throws DataExistsException {

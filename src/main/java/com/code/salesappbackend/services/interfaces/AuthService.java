@@ -17,4 +17,6 @@ public interface AuthService {
     void sendVerificationEmail(String email) throws MessagingException, DataNotFoundException;
     LoginResponse resetPassword(ResetPasswordRequest resetPasswordRequest) throws DataNotFoundException;
     void verificationEmailForResetPassword(VerifyEmailDto verifyEmailDto) throws DataNotFoundException;
+    void resendVerificationEmail(String email) throws MessagingException, DataNotFoundException;
+    void logout(String accessToken) throws DataNotFoundException;
 }

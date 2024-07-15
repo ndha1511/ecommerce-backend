@@ -1,5 +1,6 @@
 package com.code.salesappbackend.models;
 
+import com.code.salesappbackend.exceptions.UserNotVerifyException;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -41,7 +42,10 @@ public class UserDetail implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return this.verify;
+        if(!this.verify) {
+            throw new UserNotVerifyException("email is not verified");
+        }
+        return true;
     }
 
     @Override

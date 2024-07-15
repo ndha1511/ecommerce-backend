@@ -1,5 +1,6 @@
 package com.code.salesappbackend.models;
 
+import com.code.salesappbackend.events.ProductPriceEvent;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "product_prices")
 @Builder
+@EntityListeners(ProductPriceEvent.class)
 public class ProductPrice {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -11,4 +11,5 @@ public interface TokenRepository extends BaseRepository<Token, Long> {
     boolean existsByAccessToken(String accessToken);
     boolean existsByRefreshToken(String refreshToken);
     Optional<Token> findByRefreshToken(String refreshToken);
+    Optional<Token> findByAccessToken(String accessToken);
 }

@@ -6,11 +6,13 @@ import com.code.salesappbackend.exceptions.DataNotFoundException;
 import com.code.salesappbackend.models.Token;
 import com.code.salesappbackend.models.User;
 import com.code.salesappbackend.models.UserDetail;
+import com.code.salesappbackend.models.enums.Role;
 import com.code.salesappbackend.repositories.BaseRepository;
 import com.code.salesappbackend.repositories.TokenRepository;
 import com.code.salesappbackend.repositories.UserRepository;
 import com.code.salesappbackend.services.interfaces.JwtService;
 import com.code.salesappbackend.services.interfaces.UserService;
+import jakarta.annotation.PostConstruct;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -71,5 +73,19 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public User getUserByEmail(String email) throws DataNotFoundException {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
+    }
+
+    @PostConstruct
+    public void createAdminAccount() {
+        User user = new User();
+        user.setEmail("admin@gmail.com");
+        user.setPassword(passwordEncoder.encode("admin"));
+        user.setName("admin");
+        user.setRole(Role.ROLE_ADMIN);
+        user.setVerify(true);
+        user.setPhoneNumber("");
+        if(!userRepository.existsByEmail(user.getEmail())) {
+            userRepository.save(user);
+        }
     }
 }

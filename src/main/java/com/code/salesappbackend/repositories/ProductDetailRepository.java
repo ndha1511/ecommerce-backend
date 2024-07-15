@@ -4,7 +4,6 @@ import com.code.salesappbackend.models.Color;
 import com.code.salesappbackend.models.Product;
 import com.code.salesappbackend.models.ProductDetail;
 import com.code.salesappbackend.models.Size;
-import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
 
