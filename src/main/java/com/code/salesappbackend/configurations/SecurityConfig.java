@@ -41,7 +41,8 @@ public class SecurityConfig {
                     author.requestMatchers("/api/v1/test/user").hasRole("USER");
                     author.requestMatchers("/v3/api-docs/**",
                             "/swagger-ui/**",
-                            "/swagger-ui.html").permitAll();
+                            "/swagger-ui.html",
+                            "/ws/**").permitAll();
                     author.requestMatchers("/api/v1/auth/**").permitAll();
                     author.requestMatchers(HttpMethod.GET,
                             "/api/v1/products/**",
@@ -55,7 +56,7 @@ public class SecurityConfig {
                     author.requestMatchers(HttpMethod.PUT,"/api/v1/products/**").hasRole("USER");
                     author.requestMatchers("/api/v1/users/**").authenticated();
                     author.requestMatchers(HttpMethod.POST, "api/v1/orders").authenticated();
-                    author.anyRequest().permitAll(); // sau này sửa lại
+                    author.anyRequest().hasRole("ADMIN");
                 })
                 .oauth2Login(oauth2 -> oauth2.successHandler(oauth2SuccessLogin))
                 .sessionManagement(httpSessionManager ->

@@ -91,7 +91,7 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
     @Transactional(rollbackFor = {DataNotFoundException.class, OutOfInStockException.class})
     public Order save(OrderDto orderDto) throws DataNotFoundException, OutOfInStockException {
         List<ProductOrderDto> productOrders = orderDto.getProductOrders();
-        User user = userRepository.findById(orderDto.getUserId())
+        User user = userRepository.findByEmail(orderDto.getEmail())
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
         double originalAmount = 0;
         Order order = Order.builder()
@@ -113,50 +113,52 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
         originalAmount = handleAmount(productOrders, order, originalAmount);
 
         List<Long> vouchers = orderDto.getVouchers();
-        for (Long voucherId : vouchers) {
-            Voucher voucher = voucherRepository.findById(voucherId)
-                    .orElseThrow(() -> new DataNotFoundException("Voucher not found"));
-            UserVoucherId userVoucherId = new UserVoucherId(
-                    user, voucher
-            );
-            if(voucher.getScope().equals(Scope.FOR_USER)) {
-                UserVoucher userVoucher = userVoucherRepository.findById(userVoucherId)
-                        .orElseThrow(() -> new DataNotFoundException("UserVoucher not found"));
-                if(!userVoucher.isUsed()) {
+        if(vouchers != null) {
+            for (Long voucherId : vouchers) {
+                Voucher voucher = voucherRepository.findById(voucherId)
+                        .orElseThrow(() -> new DataNotFoundException("Voucher not found"));
+                UserVoucherId userVoucherId = new UserVoucherId(
+                        user, voucher
+                );
+                if(voucher.getScope().equals(Scope.FOR_USER)) {
+                    UserVoucher userVoucher = userVoucherRepository.findById(userVoucherId)
+                            .orElseThrow(() -> new DataNotFoundException("UserVoucher not found"));
+                    if(!userVoucher.isUsed()) {
+                        double discountPrice = addVoucherDeliveryToOrder(originalAmount, voucher);
+                        if(discountPrice > 0) {
+                            userVoucher.setUsed(true);
+                        }
+                        if(voucher.getVoucherType().equals(VoucherType.FOR_DELIVERY)) {
+                            order.setDeliveryAmount(order.getDeliveryAmount() - discountPrice);
+                        } else {
+                            order.setDiscountedPrice(
+                                    (order.getDiscountedPrice() == null ? 0 : order.getDiscountedPrice())
+                                            + discountPrice);
+
+                        }
+                        userVoucherRepository.save(userVoucher);
+                    }
+                } else {
+                    Optional<VoucherUsages> voucherUsages = voucherUsagesRepository.findById(userVoucherId);
                     double discountPrice = addVoucherDeliveryToOrder(originalAmount, voucher);
-                    if(discountPrice > 0) {
-                        userVoucher.setUsed(true);
+                    if(voucherUsages.isEmpty()) {
+                        if(voucher.getVoucherType().equals(VoucherType.FOR_DELIVERY)) {
+                            order.setDeliveryAmount(order.getDeliveryAmount() - discountPrice);
+                        } else {
+                            order.setDiscountedPrice(
+                                    (order.getDiscountedPrice() == null ? 0 : order.getDiscountedPrice())
+                                            + discountPrice);
+                        }
+                        if(discountPrice > 0) {
+                            VoucherUsages voucherUsages1 = new VoucherUsages();
+                            voucherUsages1.setVoucher(voucher);
+                            voucherUsages1.setUser(user);
+                            voucherUsages1.setUsagesDate(LocalDateTime.now());
+                            voucherUsagesRepository.save(voucherUsages1);
+                        }
                     }
-                    if(voucher.getVoucherType().equals(VoucherType.FOR_DELIVERY)) {
-                        order.setDeliveryAmount(order.getDeliveryAmount() - discountPrice);
-                    } else {
-                        order.setDiscountedPrice(
-                                (order.getDiscountedPrice() == null ? 0 : order.getDiscountedPrice())
-                                + discountPrice);
 
-                    }
-                    userVoucherRepository.save(userVoucher);
                 }
-            } else {
-                Optional<VoucherUsages> voucherUsages = voucherUsagesRepository.findById(userVoucherId);
-                double discountPrice = addVoucherDeliveryToOrder(originalAmount, voucher);
-                if(voucherUsages.isEmpty()) {
-                    if(voucher.getVoucherType().equals(VoucherType.FOR_DELIVERY)) {
-                        order.setDeliveryAmount(order.getDeliveryAmount() - discountPrice);
-                    } else {
-                        order.setDiscountedPrice(
-                                (order.getDiscountedPrice() == null ? 0 : order.getDiscountedPrice())
-                                        + discountPrice);
-                    }
-                    if(discountPrice > 0) {
-                        VoucherUsages voucherUsages1 = new VoucherUsages();
-                        voucherUsages1.setVoucher(voucher);
-                        voucherUsages1.setUser(user);
-                        voucherUsages1.setUsagesDate(LocalDateTime.now());
-                        voucherUsagesRepository.save(voucherUsages1);
-                    }
-                }
-
             }
         }
 

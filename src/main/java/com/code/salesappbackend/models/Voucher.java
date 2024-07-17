@@ -2,6 +2,7 @@ package com.code.salesappbackend.models;
 
 import com.code.salesappbackend.models.enums.Scope;
 import com.code.salesappbackend.models.enums.VoucherType;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,6 +30,7 @@ public class Voucher {
     private VoucherType voucherType;
     @Column(name = "expired_date")
     @Temporal(TemporalType.TIMESTAMP)
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
     private LocalDateTime expiredDate;
     private Integer quantity;
     @Enumerated(EnumType.STRING)

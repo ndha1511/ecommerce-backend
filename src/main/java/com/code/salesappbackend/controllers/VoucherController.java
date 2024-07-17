@@ -27,5 +27,15 @@ public class VoucherController {
         );
     }
 
+    @GetMapping("/{email}")
+    public Response getAllVouchers(@PathVariable String email)
+            throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "get vouchers successfully",
+                voucherService.getVouchersByEmail(email)
+        );
+    }
+
 
 }

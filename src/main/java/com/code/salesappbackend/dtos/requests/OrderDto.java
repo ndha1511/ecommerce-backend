@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OrderDto {
     @NotNull(message = "user id must be not null")
-    private Long userId;
+    private String email;
     @NotNull(message = "payment method must be not null")
     private PaymentMethod paymentMethod;
     private String note;
