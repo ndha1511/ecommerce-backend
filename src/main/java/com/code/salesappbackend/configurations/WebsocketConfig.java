@@ -2,6 +2,7 @@ package com.code.salesappbackend.configurations;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.converter.DefaultContentTypeResolver;
 import org.springframework.messaging.converter.MappingJackson2MessageConverter;
@@ -20,6 +21,8 @@ import java.util.List;
 public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
 
     private final ObjectMapper mapper;
+    @Value("${front-end.url}")
+    private String frontEndUrl;
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
@@ -30,7 +33,7 @@ public class WebsocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/ws").setAllowedOriginPatterns("*").withSockJS();
+        registry.addEndpoint("/ws").setAllowedOriginPatterns(frontEndUrl).withSockJS();
     }
 
     @Override
