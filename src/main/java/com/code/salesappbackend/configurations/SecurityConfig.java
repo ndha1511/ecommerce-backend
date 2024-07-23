@@ -55,9 +55,9 @@ public class SecurityConfig {
                             "/api/v1/comments/**").permitAll();
                     author.requestMatchers(HttpMethod.PATCH,"/api/v1/products/**").hasRole("USER");
                     author.requestMatchers(HttpMethod.PUT,"/api/v1/products/**").hasRole("USER");
-                    author.requestMatchers("/api/v1/users/**", "/api/v1/comments/**").authenticated();
+                    author.requestMatchers("/api/v1/users/**", "/api/v1/comments/**", "/api/v1/notifications/**").authenticated();
                     author.requestMatchers(HttpMethod.POST, "api/v1/orders").authenticated();
-                    author.anyRequest().hasRole("ADMIN");
+                    author.anyRequest().permitAll();
                 })
                 .oauth2Login(oauth2 -> oauth2.successHandler(oauth2SuccessLogin))
                 .sessionManagement(httpSessionManager ->

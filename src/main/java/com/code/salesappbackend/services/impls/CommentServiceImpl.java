@@ -42,7 +42,9 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, Long> implement
     @Override
     @Transactional(rollbackFor = {DataNotFoundException.class, IOException.class})
     public CommentResponse addComment(CommentDto commentDto) throws DataNotFoundException, IOException, MediaTypeNotSupportException {
-        Comment comment = mapToDto(commentDto);
+        Product product = productRepository.findById(commentDto.getProductId())
+                .orElseThrow(() -> new DataNotFoundException("Product not found"));
+        Comment comment = mapToDto(commentDto, product);
         commentRepository.save(comment);
         List<CommentMedia> commentMediaList = null;
         if(commentDto.getMedia() != null) {
@@ -51,7 +53,20 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, Long> implement
         CommentResponse commentResponse = new CommentResponse();
         commentResponse.setComment(comment);
         commentResponse.setCommentMedia(commentMediaList);
+        calculateRating(product);
         return commentResponse;
+    }
+
+    private void calculateRating(Product product) {
+        List<Comment> comments = commentRepository.findAllByProductId(product.getId());
+        float totalRating = 0;
+        for (Comment comment : comments) {
+            totalRating += comment.getRating();
+        }
+        float averageRating = totalRating / comments.size();
+        product.setAvgRating(averageRating);
+        product.setNumberOfRating(comments.size());
+        productRepository.save(product);
     }
 
     @Override
@@ -72,11 +87,9 @@ public class CommentServiceImpl extends BaseServiceImpl<Comment, Long> implement
         return result;
     }
 
-    private Comment mapToDto(CommentDto commentDto) throws DataNotFoundException {
+    private Comment mapToDto(CommentDto commentDto, Product product) throws DataNotFoundException {
         User user = userRepository.findByEmail(commentDto.getEmail())
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
-        Product product = productRepository.findById(commentDto.getProductId())
-                .orElseThrow(() -> new DataNotFoundException("Product not found"));
         return Comment.builder()
                 .commentDate(LocalDateTime.now())
                 .user(user)
