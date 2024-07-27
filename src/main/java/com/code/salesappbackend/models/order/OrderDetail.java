@@ -1,0 +1,29 @@
+package com.code.salesappbackend.models.order;
+
+import com.code.salesappbackend.models.id_classes.OrderDetailId;
+import com.code.salesappbackend.models.product.ProductDetail;
+import jakarta.persistence.*;
+import lombok.*;
+
+@Getter
+@Setter
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+@Table(name = "order_details")
+@IdClass(OrderDetailId.class)
+@Builder
+public class OrderDetail {
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "order_id", nullable = false)
+    private Order order;
+    @Id
+    @ManyToOne
+    @JoinColumn(name = "product_detail_id", nullable = false)
+    private ProductDetail productDetail;
+    @Column(nullable = false)
+    private Integer quantity;
+    @Column(nullable = false, columnDefinition = "decimal(10,2)")
+    private Double amount;
+}

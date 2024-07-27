@@ -1,7 +1,7 @@
 package com.code.salesappbackend.repositories.criteria;
 
 import com.code.salesappbackend.dtos.responses.PageResponse;
-import com.code.salesappbackend.models.Product;
+import com.code.salesappbackend.models.product.Product;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import jakarta.persistence.Query;

@@ -1,7 +1,7 @@
 package com.code.salesappbackend.configurations;
 
-import com.code.salesappbackend.services.interfaces.JwtService;
-import com.code.salesappbackend.services.interfaces.UserDetailService;
+import com.code.salesappbackend.services.interfaces.auth.JwtService;
+import com.code.salesappbackend.services.interfaces.user.UserDetailService;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;

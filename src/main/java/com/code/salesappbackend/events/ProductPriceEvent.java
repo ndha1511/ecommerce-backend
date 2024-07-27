@@ -1,7 +1,7 @@
 package com.code.salesappbackend.events;
 
-import com.code.salesappbackend.models.ProductPrice;
-import com.code.salesappbackend.services.interfaces.ProductRedisService;
+import com.code.salesappbackend.models.product.ProductPrice;
+import com.code.salesappbackend.services.interfaces.product.ProductRedisService;
 import jakarta.persistence.PostPersist;
 import jakarta.persistence.PostRemove;
 import jakarta.persistence.PostUpdate;

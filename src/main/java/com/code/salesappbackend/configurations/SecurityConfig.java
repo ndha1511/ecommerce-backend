@@ -1,7 +1,7 @@
 package com.code.salesappbackend.configurations;
 
 import com.code.salesappbackend.oauth2.Oauth2SuccessLogin;
-import com.code.salesappbackend.services.interfaces.UserDetailService;
+import com.code.salesappbackend.services.interfaces.user.UserDetailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -59,7 +59,7 @@ public class SecurityConfig {
                             "/api/v1/notifications/**",
                             "api/v1/payment/vnp").authenticated();
                     author.requestMatchers(HttpMethod.POST, "api/v1/orders").authenticated();
-                    author.anyRequest().permitAll();
+                    author.anyRequest().hasRole("ADMIN");
                 })
                 .oauth2Login(oauth2 -> oauth2.successHandler(oauth2SuccessLogin))
                 .sessionManagement(httpSessionManager ->

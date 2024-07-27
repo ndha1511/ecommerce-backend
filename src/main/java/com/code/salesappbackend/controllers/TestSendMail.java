@@ -1,6 +1,6 @@
 package com.code.salesappbackend.controllers;
 
-import com.code.salesappbackend.services.interfaces.EmailService;
+import com.code.salesappbackend.services.interfaces.user.EmailService;
 import com.code.salesappbackend.utils.EmailDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;

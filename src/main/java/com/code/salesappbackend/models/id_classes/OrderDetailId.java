@@ -1,7 +1,7 @@
 package com.code.salesappbackend.models.id_classes;
 
-import com.code.salesappbackend.models.Order;
-import com.code.salesappbackend.models.ProductDetail;
+import com.code.salesappbackend.models.order.Order;
+import com.code.salesappbackend.models.product.ProductDetail;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;

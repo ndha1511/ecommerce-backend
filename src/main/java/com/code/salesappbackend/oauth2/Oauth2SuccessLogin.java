@@ -1,13 +1,13 @@
 package com.code.salesappbackend.oauth2;
 
-import com.code.salesappbackend.dtos.responses.LoginResponse;
-import com.code.salesappbackend.models.Token;
-import com.code.salesappbackend.models.User;
-import com.code.salesappbackend.models.UserDetail;
+import com.code.salesappbackend.dtos.responses.auth.LoginResponse;
+import com.code.salesappbackend.models.auth.Token;
+import com.code.salesappbackend.models.user.User;
+import com.code.salesappbackend.models.auth.UserDetail;
 import com.code.salesappbackend.models.enums.Role;
-import com.code.salesappbackend.repositories.UserRepository;
-import com.code.salesappbackend.services.interfaces.JwtService;
-import com.code.salesappbackend.services.interfaces.TokenService;
+import com.code.salesappbackend.repositories.user.UserRepository;
+import com.code.salesappbackend.services.interfaces.auth.JwtService;
+import com.code.salesappbackend.services.interfaces.auth.TokenService;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

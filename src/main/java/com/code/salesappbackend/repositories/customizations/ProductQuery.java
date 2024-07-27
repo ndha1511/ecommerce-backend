@@ -1,8 +1,8 @@
 package com.code.salesappbackend.repositories.customizations;
 
 import com.code.salesappbackend.dtos.responses.PageResponse;
-import com.code.salesappbackend.dtos.responses.products.ProductUserResponse;
-import com.code.salesappbackend.models.Product;
+import com.code.salesappbackend.dtos.responses.product.ProductUserResponse;
+import com.code.salesappbackend.models.product.Product;
 import jakarta.persistence.Query;
 
 import jakarta.persistence.TypedQuery;
