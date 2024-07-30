@@ -37,8 +37,7 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http.csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(author -> {
-                    author.requestMatchers("/api/v1/test/admin").hasRole("ADMIN");
-                    author.requestMatchers("/api/v1/test/user").hasRole("USER");
+                    author.requestMatchers("/api/v1/test/**").permitAll();
                     author.requestMatchers("/v3/api-docs/**",
                             "/swagger-ui/**",
                             "/swagger-ui.html",
@@ -54,7 +53,6 @@ public class SecurityConfig {
                             "/api/v1/sizes/**",
                             "/api/v1/comments/**").permitAll();
                     author.requestMatchers(HttpMethod.PATCH,"/api/v1/products/**").hasRole("USER");
-                    author.requestMatchers(HttpMethod.PUT,"/api/v1/products/**").hasRole("USER");
                     author.requestMatchers("/api/v1/users/**", "/api/v1/comments/**",
                             "/api/v1/notifications/**",
                             "api/v1/payment/vnp").authenticated();

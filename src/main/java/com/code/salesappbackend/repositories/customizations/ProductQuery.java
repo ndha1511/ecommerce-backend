@@ -34,7 +34,7 @@ public class ProductQuery extends BaseCustomizationRepository<Product> {
 //        Class<ProductPrice> productPriceClass = ProductPrice.class;
 
 
-        StringBuilder queryBuilder = new StringBuilder(getQuery("new com.code.salesappbackend.dtos.responses.products.ProductUserResponse(p, pp.discount, pp.discountedPrice, pp.expiredDate)"));
+        StringBuilder queryBuilder = new StringBuilder(getQuery("new com.code.salesappbackend.dtos.responses.product.ProductUserResponse(p, pp.discount, pp.discountedPrice, pp.expiredDate)"));
 
         appendQueryBuilder(search, queryBuilder, " %s p.%s %s ?%s");
         sortBy(queryBuilder, " order by p.%s %s", sort);

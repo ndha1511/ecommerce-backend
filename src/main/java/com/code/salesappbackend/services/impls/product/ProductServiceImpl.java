@@ -2,7 +2,6 @@ package com.code.salesappbackend.services.impls.product;
 
 import com.code.salesappbackend.dtos.requests.product.ProductDetailDto;
 import com.code.salesappbackend.dtos.requests.product.ProductDto;
-import com.code.salesappbackend.dtos.requests.product.ProductUpdateDto;
 import com.code.salesappbackend.dtos.responses.PageResponse;
 import com.code.salesappbackend.dtos.responses.product.ProductResponse;
 import com.code.salesappbackend.exceptions.DataExistsException;
@@ -28,7 +27,6 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -40,7 +38,7 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
     private final ProductDetailRepository productDetailRepository;
     private final ProductQuery productQuery;
     private final ProductRedisService productRedisService;
-    private final ProductPriceRepository productPriceRepository;
+
 
 
     public ProductServiceImpl(BaseRepository<Product, Long> repository,
@@ -50,8 +48,8 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
                               S3Upload s3Upload,
                               ProductDetailRepository productDetailRepository,
                               ProductQuery productQuery,
-                              ProductRedisService productRedisService,
-                              ProductPriceRepository productPriceRepository) {
+                              ProductRedisService productRedisService
+                             ) {
         super(repository, Product.class);
         this.productMapper = productMapper;
         this.productRepository = productRepository;
@@ -60,7 +58,7 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
         this.productDetailRepository = productDetailRepository;
         this.productQuery = productQuery;
         this.productRedisService = productRedisService;
-        this.productPriceRepository = productPriceRepository;
+
     }
 
     @Override
@@ -77,65 +75,7 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
         return super.save(product);
     }
 
-    @Override
-    @Transactional(rollbackFor = {DataExistsException.class, DataNotFoundException.class})
-    public Product updateProduct(Long productId, ProductUpdateDto productUpdateDto) throws DataExistsException {
-        Optional<Product> optional = productRepository.findById(productId);
-        if (optional.isPresent()) {
-            // update product
-            Product product = optional.get();
-            product.setProductName(productUpdateDto.getName());
-            product.setDescription(productUpdateDto.getDescription());
-            product.setPrice(productUpdateDto.getPrice());
-            productRepository.save(product);
-            // change product detail if any, only update quantity
-            if (!productUpdateDto.getProductDetailsDelete().isEmpty()) {
-                try {
-                    List<ProductDetail> productDetails = productUpdateDto.getProductDetailsDelete()
-                            .stream().map(pd -> productDetailRepository
-                                    .findByColorIdAndSizeId(pd.getColorId(), pd.getSizeId()).orElseThrow()).toList();
-                    productDetailRepository.deleteAll(productDetails);
-                } catch (Exception ex) {
-                    log.error(ex.getMessage());
-                }
-            }
-            if (!productUpdateDto.getProductDetailsUpdate().isEmpty()) {
-                List<ProductDetail> productDetails = productUpdateDto.getProductDetailsUpdate()
-                        .stream()
-                        .map(pd -> {
-                            ProductDetail productDetail;
-                            productDetail = productDetailRepository
-                                    .findByColorIdAndSizeId(pd.getColorId(), pd.getSizeId()).orElse(
-                                            mapToDto(pd)
-                                    );
-                            productDetail.setQuantity(pd.getQuantity());
-                            return productDetail;
-                        }).toList();
-                productDetailRepository.saveAll(productDetails);
-            }
-            // change images if any
-            if (!productUpdateDto.getImagesDelete().isEmpty()) {
-                List<ProductImage> productImages = productUpdateDto.getImagesDelete().stream().map(path ->
-                        productImageRepository.findByPath(path).orElseThrow()).toList();
-                productImageRepository.deleteAll(productImages);
-            }
-            if (!productUpdateDto.getImagesInsert().isEmpty()) {
-                uploadImages(productUpdateDto.getImagesInsert(), product, productUpdateDto.getThumbnail());
-            }
 
-            // change price if any
-            if (!productUpdateDto.getProductPriceDelete().isEmpty()) {
-                productPriceRepository.deleteAll(productUpdateDto.getProductPriceDelete());
-            }
-            if (!productUpdateDto.getProductPriceUpdate().isEmpty()) {
-                productPriceRepository.saveAll(productUpdateDto.getProductPriceUpdate());
-            }
-
-            return product;
-        }
-
-        return null;
-    }
 
     private ProductDetail mapToDto(ProductDetailDto pd) {
         return ProductDetail.builder()

@@ -11,6 +11,6 @@ import java.util.Optional;
 
 public interface ProductDetailRepository extends BaseRepository<ProductDetail, Long> {
     boolean existsByColorAndProductAndSize(Color color, Product product, Size size);
-    Optional<ProductDetail> findByColorIdAndSizeId(Long colorId, Long sizeId);
+    Optional<ProductDetail> findByColorIdAndSizeIdAndProductId(Long colorId, Long sizeId, Long productId);
     List<ProductDetail> findByProductId(Long productId);
 }

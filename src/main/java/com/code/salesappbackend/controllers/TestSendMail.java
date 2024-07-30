@@ -28,10 +28,6 @@ public class TestSendMail {
         return "send mail successfully";
     }
 
-    @GetMapping
-    public String test() {
-        return "test token";
-    }
 
     @GetMapping("/user")
     public String testUser() {
@@ -42,5 +38,6 @@ public class TestSendMail {
     public String testAdmin() {
         return "test token role admin";
     }
+
 
 }

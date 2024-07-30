@@ -19,6 +19,8 @@ public class Color {
     private Long id;
     @Column(unique = true, nullable = false, name = "color_name")
     private String colorName;
+    @Column(unique = true, nullable = false, name = "color_hex")
+    private String colorHex;
 
     public Color(Long id) {
         this.id = id;
