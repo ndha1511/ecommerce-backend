@@ -35,7 +35,7 @@ public class FlywayConfig {
         return flyway;
     }
 
-    @Bean
+//    @Bean
     public DataSource datasource() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
         dataSource.setUrl(datasourceUrl);

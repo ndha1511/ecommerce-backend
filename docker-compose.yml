@@ -1,4 +1,4 @@
-version: '3.8'
+version: '3.7'
 
 services:
   postgres-db:
@@ -7,9 +7,11 @@ services:
     ports:
       - "5432:5432"
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: avnadmin
       POSTGRES_PASSWORD: 123456
       PG_DATA: /data/postgres
+      POSTGRES_DB: salesdb
+      POSTGRES_HOST_AUTH_METHOD: trust
     volumes:
       - postgres:/data/postgres
     networks:
@@ -29,9 +31,20 @@ services:
     networks:
       - sales-app-network
     restart: unless-stopped
+  #  mysql8-container:
+  #    container_name: mysql8-container
+  #    image: mysql:8.2.0
+  #    restart: always
+  #    environment:
+  #      MYSQL_ROOT_PASSWORD: 123456
+  #      MYSQL_DATABASE: salesdb
+  #    ports:
+  #      - "3306:3306"
+  #    networks:
+  #      - sales-app-network
   redis-container:
     container_name: redis-container
-    image: redis:latest
+    image: docker.io/redis:7.2.3
     restart: always
     ports:
       - "6379:6379"
@@ -39,7 +52,21 @@ services:
       - ./redis-data:/data
     networks:
       - sales-app-network
-
+#  spring-container:
+#    container_name: spring-container
+#    build:
+#      context: .
+#      dockerfile: Dockerfile
+#    ports:
+#      - "8080:8080"
+#    environment:
+#      REDIS_HOST: redis-container
+#      REDIS_PORT: 6379
+#    depends_on:
+#      - postgres-db
+#      - redis-container
+#    networks:
+#      - sales-app-network
 networks:
   sales-app-network:
     driver: bridge

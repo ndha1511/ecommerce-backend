@@ -64,6 +64,19 @@ public class ProductController {
 
     }
 
+    @GetMapping("/promotion-product")
+    public Response promotionProduct(@RequestParam(defaultValue = "1") int pageNo,
+                                @RequestParam(defaultValue = "10") int pageSize,
+                                @RequestParam(required = false) String[] sort,
+                                @RequestParam(required = false) String[] search)  throws Exception{
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "get product page",
+                productService.getProductsSale(pageNo, pageSize, search, sort)
+        );
+
+    }
+
     @PutMapping("/{id}")
     public Response updateProduct(@PathVariable Long id, @RequestBody ProductUpdateDto productDto)
     throws Exception {

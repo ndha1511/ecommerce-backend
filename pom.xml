@@ -15,7 +15,7 @@
     <description>sales-app-backend</description>
     <properties>
         <java.version>17</java.version>
-        <aws.sdk.version>2.19.1</aws.sdk.version>
+        <aws.sdk.version>2.25.54</aws.sdk.version>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -61,6 +61,8 @@
             <artifactId>flyway-core</artifactId>
             <version>10.15.0</version>
         </dependency>
+
+
         <dependency>
             <groupId>org.flywaydb</groupId>
             <artifactId>flyway-database-postgresql</artifactId>
@@ -78,13 +80,18 @@
 
         <dependency>
             <groupId>software.amazon.awssdk</groupId>
+            <artifactId>s3</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>software.amazon.awssdk</groupId>
             <artifactId>s3-transfer-manager</artifactId>
         </dependency>
         <dependency>
             <groupId>software.amazon.awssdk.crt</groupId>
             <artifactId>aws-crt</artifactId>
-            <version>0.20.3</version>
+            <version>0.29.18</version>
         </dependency>
+
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-oauth2-client</artifactId>
@@ -93,7 +100,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-websocket</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>

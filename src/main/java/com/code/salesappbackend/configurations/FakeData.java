@@ -3,10 +3,12 @@ package com.code.salesappbackend.configurations;
 import com.code.salesappbackend.dtos.requests.address.AddressDto;
 import com.code.salesappbackend.dtos.requests.order.OrderDto;
 import com.code.salesappbackend.dtos.requests.product.ProductOrderDto;
+import com.code.salesappbackend.dtos.requests.product.ProductPriceDto;
 import com.code.salesappbackend.dtos.requests.socket.CommentDto;
 import com.code.salesappbackend.exceptions.DataNotFoundException;
 import com.code.salesappbackend.exceptions.MediaTypeNotSupportException;
 import com.code.salesappbackend.exceptions.OutOfInStockException;
+import com.code.salesappbackend.mappers.product.ProductPriceMapper;
 import com.code.salesappbackend.models.address.Address;
 import com.code.salesappbackend.models.enums.*;
 import com.code.salesappbackend.models.product.*;
@@ -15,6 +17,7 @@ import com.code.salesappbackend.repositories.product.*;
 import com.code.salesappbackend.repositories.user.UserRepository;
 import com.code.salesappbackend.services.impls.order.OrderServiceImpl;
 import com.code.salesappbackend.services.impls.product.ProductDetailServiceImpl;
+import com.code.salesappbackend.services.impls.product.ProductPriceServiceImpl;
 import com.code.salesappbackend.services.impls.product.ProductServiceImpl;
 import com.code.salesappbackend.services.impls.socket.CommentServiceImpl;
 import lombok.RequiredArgsConstructor;
@@ -25,6 +28,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -38,7 +42,7 @@ public class FakeData {
     private final ColorRepository colorRepository;
     private final CategoryRepository categoryRepository;
     private final ProviderRepository providerRepository;
-    private final String[] categories = {"Áo", "Quần", "Giày, dép", "Túi xách", "Nước hoa", "Linh tinh"};
+    private final String[] categories = {"Áo", "Quần", "Giày dép", "Túi xách", "Nước hoa", "Linh tinh"};
     private final String[] providers = {"Nike", "Louis Vuitton", "Gucci", "Chanel", "Dior", "Prada"};
     private final ProductImageRepository productImageRepository;
     private final ProductDetailServiceImpl productDetailServiceImpl;
@@ -46,6 +50,8 @@ public class FakeData {
     private final UserRepository userRepository;
     private final OrderServiceImpl orderServiceImpl;
     private final CommentServiceImpl commentServiceImpl;
+    private final ProductPriceServiceImpl productPriceServiceImpl;
+    private final ProductPriceMapper productPriceMapper;
 
 //    @Bean
     public CommandLineRunner commandLineRunner() {
@@ -60,6 +66,7 @@ public class FakeData {
             fakeProduct(faker, random);
             fakeComment(faker, users, random);
             fakeOrder(faker, users, random);
+            fakeProductPrice(random);
         };
     }
 
@@ -107,13 +114,13 @@ public class FakeData {
 
     private void fakeSize() {
         String[] textSize = {"S", "M", "L", "XL", "XXL"};
-        for(int i = 30; i <= 45; i++) {
+        for (int i = 30; i <= 45; i++) {
             Size size = new Size();
-            size.setNumberSize(Short.parseShort(i +""));
+            size.setNumberSize(Short.parseShort(i + ""));
             size.setSizeType(SizeType.NUMBER);
             sizeRepository.save(size);
         }
-        for(int i = 0; i <= 4; i++) {
+        for (int i = 0; i <= 4; i++) {
             Size size = new Size();
             size.setTextSize(textSize[i]);
             size.setSizeType(SizeType.TEXT);
@@ -132,7 +139,7 @@ public class FakeData {
                 "#8F00FF", "#DC143C", "#808080", "#FFC0CB",
                 "#00FFFF", "#800080", "#C0C0C0"
         };
-        for(int i = 0; i < colors.length; i++) {
+        for (int i = 0; i < colors.length; i++) {
             Color color = new Color();
             color.setColorName(colors[i]);
             color.setColorHex(colorsHex[i]);
@@ -143,12 +150,12 @@ public class FakeData {
     private void fakeProduct(Faker faker, Random random) {
         for (int i = 0; i < 1000; i++) {
             Product product = new Product();
-            product.setProductName(faker.commerce().productName() + random.nextInt());
+            product.setProductName(faker.commerce().productName() + " " + faker.commerce().brand() + " " + faker.name().title());
             product.setDescription(faker.restaurant().description());
             product.setProductStatus(Status.ACTIVE);
             product.setCategory(new Category(random.nextLong(categories.length) + 1));
             product.setProvider(new Provider(random.nextLong(providers.length) + 1));
-            product.setPrice(Double.parseDouble(random.nextInt(50000, 2000001) + ""));
+            product.setPrice(Double.parseDouble(roundPrice(random.nextInt(50000, 2000001)) + ""));
             productServiceImpl.save(product);
             for (int j = 0; j < 5; j++) {
                 ProductImage productImage = new ProductImage();
@@ -159,20 +166,33 @@ public class FakeData {
                                 formattedNumber);
                 productImage.setPath(path);
                 productImageRepository.save(productImage);
-                if(j == 0) {
+                if (j == 0) {
                     product.setThumbnail(path);
                     productServiceImpl.save(product);
                 }
             }
-            for (int j = 0; j <= 10; j++) {
+            SizeType sizeType = faker.options().option(SizeType.class);
+            for (int j = 0; j <= 5; j++) {
                 ProductDetail productDetail = new ProductDetail();
                 productDetail.setProduct(product);
-                productDetail.setQuantity(random.nextInt(1000,10000));
-                productDetail.setSize(new Size(random.nextLong(20) + 1));
-                productDetail.setColor(new Color(random.nextLong(15) + 1));
-                productDetailServiceImpl.save(productDetail);
+                productDetail.setQuantity(random.nextInt(100, 1000));
+                if (sizeType == SizeType.NUMBER) {
+                    productDetail.setSize(new Size(random.nextLong(15) + 1));
+                } else {
+                    productDetail.setSize(new Size(random.nextLong(16, 20) + 1));
+                }
+                for (int k = 1; k <= 6; k++) {
+                    productDetail.setId(null);
+                    productDetail.setColor(new Color(Long.parseLong(k + "")));
+                    productDetailServiceImpl.save(productDetail);
+                }
+
             }
         }
+    }
+
+    private int roundPrice(int price) {
+        return Math.round(price / 1000f) * 1000;
     }
 
     private void fakeOrder(Faker faker, List<User> users, Random random)
@@ -192,9 +212,9 @@ public class FakeData {
             orderDto.setPhoneNumber(user.getPhoneNumber());
             orderDto.setPaymentMethod(faker.options().option(PaymentMethod.class));
             List<ProductOrderDto> productOrderDtos = new ArrayList<>();
-            for(int j = 0; j <= 4; j++) {
+            for (int j = 0; j <= 4; j++) {
                 ProductOrderDto productOrderDto = new ProductOrderDto();
-                productOrderDto.setProductDetailId(random.nextLong(10000) + 1);
+                productOrderDto.setProductDetailId(random.nextLong(36000) + 1);
                 productOrderDto.setQuantity(random.nextInt(5) + 1);
                 productOrderDtos.add(productOrderDto);
             }
@@ -208,7 +228,7 @@ public class FakeData {
     private void fakeComment(Faker faker, List<User> users, Random random)
             throws DataNotFoundException, IOException, MediaTypeNotSupportException {
         User[] userArr = users.toArray(new User[0]);
-        for(int i = 0; i < 5000; i++) {
+        for (int i = 0; i < 5000; i++) {
             User user = userArr[random.nextInt(userArr.length)];
             CommentDto commentDto = CommentDto.builder()
                     .email(user.getEmail())
@@ -217,6 +237,27 @@ public class FakeData {
                     .productId(random.nextLong(1000) + 1)
                     .build();
             commentServiceImpl.addComment(commentDto);
+        }
+    }
+
+    private void fakeProductPrice(Random random) throws DataNotFoundException {
+        List<Long> ids = new ArrayList<>();
+        for (int i = 0; i < 200; i++) {
+            long productId = random.nextLong(1000) + 1;
+            if (ids.contains(productId)) {
+                continue;
+            }
+            ProductPriceDto productPriceDto = ProductPriceDto.builder()
+                    .productId(productId)
+                    .discount((random.nextInt(9) + 1) / 10f)
+                    .note("sale")
+                    .expiredDate(LocalDateTime.of(2026, 12, 31, 23, 59, 59))
+                    .build();
+
+            productPriceServiceImpl
+                    .save(productPriceMapper.productPriceDto2ProductPrice(productPriceDto));
+            ids.add(productId);
+
         }
     }
 

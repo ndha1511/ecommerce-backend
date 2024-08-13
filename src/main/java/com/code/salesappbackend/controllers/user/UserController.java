@@ -2,17 +2,21 @@ package com.code.salesappbackend.controllers.user;
 
 import com.code.salesappbackend.dtos.requests.auth.ChangePasswordRequest;
 import com.code.salesappbackend.dtos.requests.user.UserDto;
+import com.code.salesappbackend.dtos.requests.user.UserUpdateDto;
 import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 
 import com.code.salesappbackend.mappers.user.UserMapper;
 import com.code.salesappbackend.models.user.User;
 import com.code.salesappbackend.services.interfaces.user.UserService;
+import com.code.salesappbackend.utils.S3Upload;
+import com.code.salesappbackend.utils.ValidToken;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Map;
 
 
 @RestController
@@ -21,15 +25,9 @@ import java.util.Map;
 public class UserController {
     private final UserService userService;
     private final UserMapper userMapper;
+    private final ValidToken validToken;
+    private final S3Upload s3Upload;
 
-    @GetMapping
-    public Response getAllUsers() {
-        return new ResponseSuccess<>(
-                HttpStatus.OK.value(),
-                "get users successfully",
-                userService.findAll()
-        );
-    }
 
     @PostMapping
     public Response createUser(@RequestBody UserDto userDto) {
@@ -42,8 +40,9 @@ public class UserController {
     }
 
     @GetMapping("/{email}")
-    public Response getUserById(@PathVariable String email)
+    public Response getUserById(@PathVariable String email, HttpServletRequest request)
             throws Exception {
+        validToken.valid(email, request);
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "find user successfully",
@@ -51,35 +50,35 @@ public class UserController {
         );
     }
 
-    @PutMapping("/{id}")
-    public Response updateUser(@PathVariable Long id, @RequestBody UserDto userDto)
+    @PutMapping("/{email}")
+    public Response updateUser(@PathVariable String email, @RequestBody UserUpdateDto userDto, HttpServletRequest request)
             throws Exception {
-        User user = userMapper.userDto2User(userDto);
-        user.setId(id);
+        validToken.valid(email, request);
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "updated user",
-                userService.update(id, user)
+                userService.updateUser(email, userDto)
         );
     }
 
-    @PatchMapping("/{id}")
-    public Response updatePatchUser(@PathVariable Long id, @RequestBody Map<String, ?> data)
-            throws Exception {
-        return new ResponseSuccess<>(
-                HttpStatus.OK.value(),
-                "updated user",
-                userService.updatePatch(id, data)
-        );
-    }
 
     @PostMapping("/change-password")
-    public Response changePassword(@RequestBody ChangePasswordRequest changePasswordRequest)
+    public Response changePassword(@RequestBody ChangePasswordRequest changePasswordRequest, HttpServletRequest request)
     throws Exception {
+        validToken.valid(changePasswordRequest.getEmail(), request);
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "change password successfully",
                 userService.changePassword(changePasswordRequest)
+        );
+    }
+
+    @PostMapping("/upload")
+    public Response uploadAvatar(@RequestParam("avatar") MultipartFile file) throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(),
+                "success",
+                s3Upload.uploadFile(file)
         );
     }
 }

@@ -1,6 +1,7 @@
 package com.code.salesappbackend.controllers.order;
 
 import com.code.salesappbackend.dtos.requests.order.OrderDto;
+import com.code.salesappbackend.dtos.requests.order.OrderUpdateDto;
 import com.code.salesappbackend.dtos.responses.Response;
 import com.code.salesappbackend.dtos.responses.ResponseSuccess;
 import com.code.salesappbackend.services.interfaces.order.OrderService;
@@ -40,10 +41,20 @@ public class OrderController {
     public Response getAllOrders(@RequestParam(defaultValue = "1") int pageNo,
                                  @RequestParam(defaultValue = "10") int pageSize,
                                  @RequestParam(required = false) String[] sort,
-                                 @RequestParam(required = false) String[] search) {
+                                 @RequestParam(required = false) String[] search) throws Exception{
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(), "success",
                 orderService.getPageData(pageNo, pageSize, search, sort)
+        );
+    }
+
+    @PutMapping("/{id}")
+    public Response updateStatusOrder(@PathVariable String id,
+                                      @RequestBody @Valid OrderUpdateDto orderDto)
+    throws Exception {
+        return new ResponseSuccess<>(
+                HttpStatus.OK.value(), "success",
+                orderService.updateStatusOrder(id, orderDto.getStatus())
         );
     }
 

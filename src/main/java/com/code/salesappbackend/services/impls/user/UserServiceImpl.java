@@ -1,8 +1,10 @@
 package com.code.salesappbackend.services.impls.user;
 
 import com.code.salesappbackend.dtos.requests.auth.ChangePasswordRequest;
+import com.code.salesappbackend.dtos.requests.user.UserUpdateDto;
 import com.code.salesappbackend.dtos.responses.auth.LoginResponse;
 import com.code.salesappbackend.exceptions.DataNotFoundException;
+import com.code.salesappbackend.mappers.address.AddressMapper;
 import com.code.salesappbackend.models.auth.Token;
 import com.code.salesappbackend.models.user.User;
 import com.code.salesappbackend.models.auth.UserDetail;
@@ -28,17 +30,19 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     private final PasswordEncoder passwordEncoder;
     private final TokenRepository tokenRepository;
     private final JwtService jwtService;
+    private final AddressMapper addressMapper;
 
     public UserServiceImpl(BaseRepository<User, Long> repository,
                            UserRepository userRepository,
                            PasswordEncoder passwordEncoder,
                            TokenRepository tokenRepository,
-                           JwtService jwtService) {
+                           JwtService jwtService, AddressMapper addressMapper) {
         super(repository, User.class);
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.tokenRepository = tokenRepository;
         this.jwtService = jwtService;
+        this.addressMapper = addressMapper;
     }
 
 
@@ -74,6 +78,19 @@ public class UserServiceImpl extends BaseServiceImpl<User, Long> implements User
     public User getUserByEmail(String email) throws DataNotFoundException {
         return userRepository.findByEmail(email)
                 .orElseThrow(() -> new DataNotFoundException("user not found"));
+    }
+
+    @Override
+    public User updateUser(String email, UserUpdateDto userUpdateDto) throws DataNotFoundException {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new DataNotFoundException("user not found"));
+        user.setGender(userUpdateDto.getGender());
+        user.setName(userUpdateDto.getName());
+        user.setPhoneNumber(userUpdateDto.getPhoneNumber());
+        user.setAddress(addressMapper.addressDto2Address(userUpdateDto.getAddressDto()));
+        user.setDateOfBirth(userUpdateDto.getDateOfBirth());
+        user.setAvatarUrl(userUpdateDto.getAvatarUrl());
+        return userRepository.save(user);
     }
 
     @PostConstruct

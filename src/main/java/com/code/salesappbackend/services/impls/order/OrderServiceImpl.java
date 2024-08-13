@@ -21,6 +21,7 @@ import com.code.salesappbackend.models.voucher.Voucher;
 import com.code.salesappbackend.models.voucher.VoucherUsages;
 import com.code.salesappbackend.repositories.*;
 import com.code.salesappbackend.repositories.order.OrderDetailRepository;
+import com.code.salesappbackend.repositories.order.OrderRepository;
 import com.code.salesappbackend.repositories.product.ProductDetailRepository;
 import com.code.salesappbackend.repositories.product.ProductPriceRepository;
 import com.code.salesappbackend.repositories.product.ProductRepository;
@@ -55,6 +56,7 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
     private ProductRepository productRepository;
     private UserVoucherRepository userVoucherRepository;
     private final VoucherUsagesRepository voucherUsagesRepository;
+    private OrderRepository orderRepository;
 
     public OrderServiceImpl(BaseRepository<Order, String> repository,
                             VoucherUsagesRepository voucherUsagesRepository) {
@@ -185,6 +187,13 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
         return super.save(order);
     }
 
+    @Override
+    public Order updateStatusOrder(String id, OrderStatus status) throws DataNotFoundException {
+        Order order = orderRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Order not found"));
+        order.setOrderStatus(status);
+        return orderRepository.save(order);
+    }
+
     private double addVoucherDeliveryToOrder(double originalAmount, Voucher voucher) {
         if(voucher.getExpiredDate().isAfter(LocalDateTime.now()) &&
                 originalAmount >= voucher.getMinAmount()) {
@@ -242,5 +251,8 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
     }
 
 
-
+    @Autowired
+    public void setOrderRepository(OrderRepository orderRepository) {
+        this.orderRepository = orderRepository;
+    }
 }

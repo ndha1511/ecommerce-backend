@@ -33,7 +33,7 @@ public class CommentController {
     public Response pageComments(@RequestParam(defaultValue = "1") int pageNo,
                                 @RequestParam(defaultValue = "10") int pageSize,
                                 @RequestParam(required = false) String[] search,
-                                @RequestParam(required = false) String[] sort) {
+                                @RequestParam(required = false) String[] sort) throws Exception{
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(),
                 "get comment successfully",

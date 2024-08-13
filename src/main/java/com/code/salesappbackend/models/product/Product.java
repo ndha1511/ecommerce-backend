@@ -45,4 +45,8 @@ public class Product extends BaseModel {
     private Integer totalQuantity;
     @Column(name = "buy_quantity")
     private Integer buyQuantity;
+
+    public Product(Long id) {
+        this.id = id;
+    }
 }

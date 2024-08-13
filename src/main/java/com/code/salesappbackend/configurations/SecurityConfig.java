@@ -52,11 +52,10 @@ public class SecurityConfig {
                             "/api/v1/colors/**",
                             "/api/v1/sizes/**",
                             "/api/v1/comments/**").permitAll();
-                    author.requestMatchers(HttpMethod.PATCH,"/api/v1/products/**").hasRole("USER");
                     author.requestMatchers("/api/v1/users/**", "/api/v1/comments/**",
                             "/api/v1/notifications/**",
                             "api/v1/payment/vnp").authenticated();
-                    author.requestMatchers(HttpMethod.POST, "api/v1/orders").authenticated();
+                    author.requestMatchers(HttpMethod.POST, "api/v1/orders/**").authenticated();
                     author.anyRequest().hasRole("ADMIN");
                 })
                 .oauth2Login(oauth2 -> oauth2.successHandler(oauth2SuccessLogin))

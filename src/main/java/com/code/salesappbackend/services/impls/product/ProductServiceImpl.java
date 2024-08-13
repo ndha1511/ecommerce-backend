@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 
@@ -131,4 +132,27 @@ public class ProductServiceImpl extends BaseServiceImpl<Product, Long> implement
         return result;
     }
 
+    @Override
+    public PageResponse<?> getProductsSale(int pageNo, int pageSize, String[] search, String[] sort) throws JsonProcessingException {
+        PageResponse<?> result = productRedisService.getProductsInCache(pageNo, pageSize, search, sort);
+        if (result == null) {
+            result = productQuery.getPageDataPromotion(pageNo, pageSize, search, sort);
+            productRedisService.saveProductsInCache(result, pageNo, pageSize, search, sort);
+        }
+        return result;
+    }
+
+    @Override
+    public Product update(Long id, Product product) throws DataNotFoundException {
+        Product oldProduct = productRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("product not found"));
+        oldProduct.setProductStatus(product.getProductStatus());
+        oldProduct.setDescription(product.getDescription());
+        oldProduct.setPrice(product.getPrice());
+        oldProduct.setProductName(product.getProductName());
+        oldProduct.setProvider(product.getProvider());
+        oldProduct.setCategory(product.getCategory());
+        oldProduct.setThumbnail(product.getThumbnail());
+        return productRepository.save(oldProduct);
+    }
 }
