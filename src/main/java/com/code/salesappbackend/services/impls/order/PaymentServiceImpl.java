@@ -1,9 +1,16 @@
 package com.code.salesappbackend.services.impls.order;
 
 import com.code.salesappbackend.configurations.VnpConfig;
+import com.code.salesappbackend.exceptions.DataNotFoundException;
+import com.code.salesappbackend.models.enums.OrderStatus;
+import com.code.salesappbackend.models.order.Order;
+import com.code.salesappbackend.models.order.PaymentSecurityHash;
+import com.code.salesappbackend.repositories.order.OrderRepository;
+import com.code.salesappbackend.repositories.order.PaymentSecurityHashRepository;
 import com.code.salesappbackend.services.interfaces.order.PaymentService;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.net.URLEncoder;
@@ -13,11 +20,26 @@ import java.util.*;
 
 @Service
 public class PaymentServiceImpl implements PaymentService {
+
+    private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+    private final OrderRepository orderRepository;
+
     @Value("${front-end.url}")
     private String vnp_ReturnUrl;
 
+    private final PasswordEncoder passwordEncoder;
+    private final PaymentSecurityHashRepository paymentSecurityHashRepository;
+
+    public PaymentServiceImpl(PasswordEncoder passwordEncoder, PaymentSecurityHashRepository paymentSecurityHashRepository, OrderRepository orderRepository) {
+        this.passwordEncoder = passwordEncoder;
+        this.paymentSecurityHashRepository = paymentSecurityHashRepository;
+        this.orderRepository = orderRepository;
+    }
+
+
+
     @Override
-    public String payment(HttpServletRequest req)  {
+    public String payment(String orderId, HttpServletRequest req)  {
         String vnp_Version = "2.1.0";
         String vnp_Command = "pay";
         String orderType = "other";
@@ -45,8 +67,10 @@ public class PaymentServiceImpl implements PaymentService {
         }
 
         vnp_Params.put("vnp_Locale", "vn");
-        vnp_ReturnUrl += "/payment/success";
-        vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl);
+        String code = saveSecurityHash(orderId);
+        String vnp_ReturnUrl_rs = vnp_ReturnUrl;
+        vnp_ReturnUrl_rs += "/payment/success";
+        vnp_Params.put("vnp_ReturnUrl", vnp_ReturnUrl_rs + "?orderId=" + orderId + "&code=" + code);
         vnp_Params.put("vnp_IpAddr", vnp_IpAddr);
 
         Calendar cld = Calendar.getInstance(TimeZone.getTimeZone("Etc/GMT+7"));
@@ -84,6 +108,46 @@ public class PaymentServiceImpl implements PaymentService {
         String queryUrl = query.toString();
         String vnp_SecureHash = VnpConfig.hmacSHA512(VnpConfig.secretKey, hashData.toString());
         queryUrl += "&vnp_SecureHash=" + vnp_SecureHash;
-        return VnpConfig.vnp_PayUrl + "?" + queryUrl;
+        return VnpConfig.vnp_PayUrl  + "?" + queryUrl;
+    }
+
+    @Override
+    public String paymentSuccess(HttpServletRequest req) throws DataNotFoundException {
+        String orderId = req.getParameter("orderId");
+        String code = req.getParameter("code");
+        PaymentSecurityHash paymentSecurityHash = paymentSecurityHashRepository.findByOrderId(orderId)
+                .orElseThrow(() -> new DataNotFoundException("order not found"));
+        if(passwordEncoder.matches(code, paymentSecurityHash.getHashCode())) {
+            Order order = orderRepository.findById(orderId)
+                    .orElseThrow(() -> new DataNotFoundException("order not found"));
+            order.setOrderStatus(OrderStatus.PAID);
+            orderRepository.save(order);
+            paymentSecurityHashRepository.delete(paymentSecurityHash);
+        } else {
+            throw new DataNotFoundException("hash code not match");
+        }
+        return orderId;
+    }
+
+    private String saveSecurityHash(String orderId) {
+        PaymentSecurityHash paymentSecurityHash = paymentSecurityHashRepository
+                .findByOrderId(orderId).orElse(new PaymentSecurityHash());
+        String originCode = generateRandomString(15);
+        paymentSecurityHash.setOrderId(orderId);
+        paymentSecurityHash.setHashCode(passwordEncoder.encode(originCode));
+        paymentSecurityHashRepository.save(paymentSecurityHash);
+        return originCode;
+    }
+
+    private String generateRandomString(int length) {
+        Random random = new Random();
+        StringBuilder sb = new StringBuilder(length);
+
+        for (int i = 0; i < length; i++) {
+            int index = random.nextInt(CHARACTERS.length());
+            sb.append(CHARACTERS.charAt(index));
+        }
+
+        return sb.toString();
     }
 }

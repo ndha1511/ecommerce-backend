@@ -2,29 +2,33 @@ package com.code.salesappbackend.services.impls.order;
 
 import com.code.salesappbackend.dtos.requests.order.OrderDto;
 import com.code.salesappbackend.dtos.requests.product.ProductOrderDto;
+import com.code.salesappbackend.dtos.responses.socket.MessageResponse;
 import com.code.salesappbackend.exceptions.DataNotFoundException;
 import com.code.salesappbackend.exceptions.OutOfInStockException;
 import com.code.salesappbackend.mappers.address.AddressMapper;
-import com.code.salesappbackend.models.enums.DeliveryMethod;
-import com.code.salesappbackend.models.enums.OrderStatus;
-import com.code.salesappbackend.models.enums.Scope;
-import com.code.salesappbackend.models.enums.VoucherType;
+import com.code.salesappbackend.models.enums.*;
 import com.code.salesappbackend.models.id_classes.UserVoucherId;
 import com.code.salesappbackend.models.order.Order;
 import com.code.salesappbackend.models.order.OrderDetail;
+import com.code.salesappbackend.models.order.OrderVoucher;
 import com.code.salesappbackend.models.product.Product;
 import com.code.salesappbackend.models.product.ProductDetail;
 import com.code.salesappbackend.models.product.ProductPrice;
+import com.code.salesappbackend.models.socket.Notification;
 import com.code.salesappbackend.models.user.User;
+import com.code.salesappbackend.models.user.UserNotification;
 import com.code.salesappbackend.models.user.UserVoucher;
 import com.code.salesappbackend.models.voucher.Voucher;
 import com.code.salesappbackend.models.voucher.VoucherUsages;
 import com.code.salesappbackend.repositories.*;
 import com.code.salesappbackend.repositories.order.OrderDetailRepository;
 import com.code.salesappbackend.repositories.order.OrderRepository;
+import com.code.salesappbackend.repositories.order.OrderVoucherRepository;
 import com.code.salesappbackend.repositories.product.ProductDetailRepository;
 import com.code.salesappbackend.repositories.product.ProductPriceRepository;
 import com.code.salesappbackend.repositories.product.ProductRepository;
+import com.code.salesappbackend.repositories.socket.NotificationRepository;
+import com.code.salesappbackend.repositories.user.UserNotificationRepository;
 import com.code.salesappbackend.repositories.user.UserRepository;
 import com.code.salesappbackend.repositories.user.UserVoucherRepository;
 import com.code.salesappbackend.repositories.voucher.VoucherRepository;
@@ -33,6 +37,7 @@ import com.code.salesappbackend.services.impls.BaseServiceImpl;
 import com.code.salesappbackend.services.interfaces.order.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,6 +62,10 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
     private UserVoucherRepository userVoucherRepository;
     private final VoucherUsagesRepository voucherUsagesRepository;
     private OrderRepository orderRepository;
+    private NotificationRepository notificationRepository;
+    private UserNotificationRepository userNotificationRepository;
+    private SimpMessagingTemplate messagingTemplate;
+    private OrderVoucherRepository orderVoucherRepository;
 
     public OrderServiceImpl(BaseRepository<Order, String> repository,
                             VoucherUsagesRepository voucherUsagesRepository) {
@@ -67,6 +76,11 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
     @Autowired
     public void setProductPriceRepository(ProductPriceRepository productPriceRepository) {
         this.productPriceRepository = productPriceRepository;
+    }
+
+    @Autowired
+    public void setMessagingTemplate(SimpMessagingTemplate messagingTemplate) {
+        this.messagingTemplate = messagingTemplate;
     }
 
     @Autowired
@@ -113,11 +127,15 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
         User user = userRepository.findByEmail(orderDto.getEmail())
                 .orElseThrow(() -> new DataNotFoundException("User not found"));
         double originalAmount = 0;
+        OrderStatus orderStatus = OrderStatus.PENDING;
+        if(orderDto.getPaymentMethod().equals(PaymentMethod.CC)) {
+            orderStatus = OrderStatus.UNPAID;
+        }
         Order order = Order.builder()
                 .id(UUID.randomUUID().toString())
                 .user(user)
                 .orderDate(LocalDateTime.now())
-                .orderStatus(OrderStatus.PENDING)
+                .orderStatus(orderStatus)
                 .originalAmount(originalAmount)
                 .paymentMethod(orderDto.getPaymentMethod())
                 .deliveryMethod(orderDto.getDeliveryMethod())
@@ -148,7 +166,11 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
                             userVoucher.setUsed(true);
                         }
                         if(voucher.getVoucherType().equals(VoucherType.FOR_DELIVERY)) {
-                            order.setDeliveryAmount(order.getDeliveryAmount() - discountPrice);
+                            double discount = order.getDeliveryAmount() - discountPrice;
+                            if(discount < 0) {
+                                discount = 0;
+                            }
+                            order.setDeliveryAmount(discount);
                         } else {
                             order.setDiscountedPrice(
                                     (order.getDiscountedPrice() == null ? 0 : order.getDiscountedPrice())
@@ -156,13 +178,21 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
 
                         }
                         userVoucherRepository.save(userVoucher);
+                        OrderVoucher orderVoucher = new OrderVoucher();
+                        orderVoucher.setOrder(order);
+                        orderVoucher.setVoucher(voucher);
+                        orderVoucherRepository.save(orderVoucher);
                     }
                 } else {
                     Optional<VoucherUsages> voucherUsages = voucherUsagesRepository.findById(userVoucherId);
                     double discountPrice = addVoucherDeliveryToOrder(originalAmount, voucher);
                     if(voucherUsages.isEmpty()) {
                         if(voucher.getVoucherType().equals(VoucherType.FOR_DELIVERY)) {
-                            order.setDeliveryAmount(order.getDeliveryAmount() - discountPrice);
+                            double discount = order.getDeliveryAmount() - discountPrice;
+                            if(discount < 0) {
+                                discount = 0;
+                            }
+                            order.setDeliveryAmount(discount);
                         } else {
                             order.setDiscountedPrice(
                                     (order.getDiscountedPrice() == null ? 0 : order.getDiscountedPrice())
@@ -174,6 +204,10 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
                             voucherUsages1.setUser(user);
                             voucherUsages1.setUsagesDate(LocalDateTime.now());
                             voucherUsagesRepository.save(voucherUsages1);
+                            OrderVoucher orderVoucher = new OrderVoucher();
+                            orderVoucher.setOrder(order);
+                            orderVoucher.setVoucher(voucher);
+                            orderVoucherRepository.save(orderVoucher);
                         }
                     }
 
@@ -189,9 +223,75 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
 
     @Override
     public Order updateStatusOrder(String id, OrderStatus status) throws DataNotFoundException {
-        Order order = orderRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Order not found"));
-        order.setOrderStatus(status);
-        return orderRepository.save(order);
+        if(!status.equals(OrderStatus.PAID)) {
+            Order order = orderRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Order not found"));
+            order.setOrderStatus(status);
+            orderRepository.save(order);
+            switch (status) {
+                case PROCESSING:
+                    handleNotification(order, "Đơn hàng " + order.getId() + " đã được xác nhận");
+                    break;
+                case SHIPPED:
+                    handleNotification(order, "Đơn hàng " + order.getId() + " đã được giao");
+                    break;
+                case CANCELLED:
+                    List<OrderVoucher> orderVouchers = orderVoucherRepository.findAllByOrderId(order.getId());
+                    for(OrderVoucher orderVoucher : orderVouchers) {
+                        Voucher voucher = orderVoucher.getVoucher();
+                        if(voucher.getScope().equals(Scope.FOR_USER)) {
+                            UserVoucher userVoucher = userVoucherRepository.findById(
+                                    new UserVoucherId(order.getUser(), voucher)
+                            ).orElseThrow(() -> new DataNotFoundException("UserVoucher not found"));
+                            userVoucher.setUsed(false);
+                            userVoucherRepository.save(userVoucher);
+                        } else {
+                            VoucherUsages voucherUsages = voucherUsagesRepository.findById(
+                                    new UserVoucherId(order.getUser(), voucher)
+                            ).orElseThrow(() -> new DataNotFoundException("UserVoucherUsages not found"));
+                            voucherUsagesRepository.delete(voucherUsages);
+                        }
+                    }
+                    List<OrderDetail> orderDetails = orderDetailRepository.findByOrderId(order.getId());
+                    for(OrderDetail orderDetail : orderDetails) {
+                        ProductDetail productDetail = orderDetail.getProductDetail();
+                        productDetail.setQuantity(productDetail.getQuantity() + orderDetail.getQuantity());
+                        productDetailRepository.save(productDetail);
+                        Product product = productDetail.getProduct();
+                        product.setBuyQuantity(product.getBuyQuantity() - orderDetail.getQuantity());
+                        product.setTotalQuantity(product.getTotalQuantity() + orderDetail.getQuantity());
+                        productDetailRepository.save(productDetail);
+                    }
+
+                    break;
+                default: break;
+            }
+            return order;
+        }
+        return null;
+    }
+
+    private void handleNotification(Order order, String text) {
+        Notification notification = new Notification();
+        notification.setContent(text);
+        notification.setScope(Scope.FOR_USER);
+        notification.setNotificationDate(LocalDateTime.now());
+        notification.setRedirectTo("/orders/" + order.getId());
+        notificationRepository.save(notification);
+        UserNotification userNotification = new UserNotification();
+        userNotification.setUser(order.getUser());
+        userNotification.setNotification(notification);
+        userNotification.setSeen(false);
+        userNotificationRepository.save(userNotification);
+        MessageResponse<Notification> messageResponse = new MessageResponse<>();
+        messageResponse.setData(notification);
+        messageResponse.setType("notification");
+        messagingTemplate.convertAndSendToUser(order.getUser().getEmail(),
+                "/queue/notifications", messageResponse);
+    }
+
+    @Override
+    public List<OrderDetail> getOrderDetailsByOrderId(String orderId) {
+        return orderDetailRepository.findByOrderId(orderId);
     }
 
     private double addVoucherDeliveryToOrder(double originalAmount, Voucher voucher) {
@@ -254,5 +354,20 @@ public class OrderServiceImpl extends BaseServiceImpl<Order, String> implements 
     @Autowired
     public void setOrderRepository(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
+    }
+
+    @Autowired
+    public void setNotificationRepository(NotificationRepository notificationRepository) {
+        this.notificationRepository = notificationRepository;
+    }
+
+    @Autowired
+    public void setUserNotificationRepository(UserNotificationRepository userNotificationRepository) {
+        this.userNotificationRepository = userNotificationRepository;
+    }
+
+    @Autowired
+    public void setOrderVoucherRepository(OrderVoucherRepository orderVoucherRepository) {
+        this.orderVoucherRepository = orderVoucherRepository;
     }
 }

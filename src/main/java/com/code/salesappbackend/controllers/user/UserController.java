@@ -12,6 +12,7 @@ import com.code.salesappbackend.services.interfaces.user.UserService;
 import com.code.salesappbackend.utils.S3Upload;
 import com.code.salesappbackend.utils.ValidToken;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -63,7 +64,7 @@ public class UserController {
 
 
     @PostMapping("/change-password")
-    public Response changePassword(@RequestBody ChangePasswordRequest changePasswordRequest, HttpServletRequest request)
+    public Response changePassword(@RequestBody @Valid ChangePasswordRequest changePasswordRequest, HttpServletRequest request)
     throws Exception {
         validToken.valid(changePasswordRequest.getEmail(), request);
         return new ResponseSuccess<>(

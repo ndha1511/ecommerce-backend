@@ -28,4 +28,6 @@ public class Notification {
     private LocalDateTime notificationDate;
     @Enumerated(EnumType.STRING)
     private Scope scope;
+    @Column(name = "redirect_to")
+    private String redirectTo;
 }

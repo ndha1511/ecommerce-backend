@@ -50,7 +50,7 @@ public class OrderController {
 
     @PutMapping("/{id}")
     public Response updateStatusOrder(@PathVariable String id,
-                                      @RequestBody @Valid OrderUpdateDto orderDto)
+                                      @RequestBody OrderUpdateDto orderDto)
     throws Exception {
         return new ResponseSuccess<>(
                 HttpStatus.OK.value(), "success",
@@ -67,4 +67,6 @@ public class OrderController {
                 orderService.updatePatch(id, data)
         );
     }
+
+
 }

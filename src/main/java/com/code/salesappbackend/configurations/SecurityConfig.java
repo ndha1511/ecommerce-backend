@@ -54,8 +54,11 @@ public class SecurityConfig {
                             "/api/v1/comments/**").permitAll();
                     author.requestMatchers("/api/v1/users/**", "/api/v1/comments/**",
                             "/api/v1/notifications/**",
-                            "api/v1/payment/vnp").authenticated();
+                            "api/v1/payment/vnp/**", "/api/v1/order-details/**").authenticated();
                     author.requestMatchers(HttpMethod.POST, "api/v1/orders/**").authenticated();
+                    author.requestMatchers(HttpMethod.GET, "api/v1/orders/**").authenticated();
+                    author.requestMatchers(HttpMethod.GET, "api/v1/vouchers/**").authenticated();
+                    author.requestMatchers(HttpMethod.PUT, "api/v1/orders/**").authenticated();
                     author.anyRequest().hasRole("ADMIN");
                 })
                 .oauth2Login(oauth2 -> oauth2.successHandler(oauth2SuccessLogin))
